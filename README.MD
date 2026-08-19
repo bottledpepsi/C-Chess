@@ -1,0 +1,1 @@
+## C-Chess is a port of [Python-Chess](https://www.github.com/bottledpepsi/Python-Chess) in C++
