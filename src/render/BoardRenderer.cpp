@@ -1,5 +1,10 @@
 #include "../../include/render/BoardRenderer.hpp"
 
+
+const sf::Color LightColor(238, 238, 210);
+const sf::Color DarkColor(118, 150, 86);
+
+
 BoardRenderer::BoardRenderer(
     const chess::Board& board,
     AssetManager& assetManager
@@ -25,9 +30,9 @@ void BoardRenderer::drawBoard(sf::RenderWindow& window) {
             bool lightSquare = (file + rank) % 2 == 0;
 
             if (lightSquare)
-                square.setFillColor(sf::Color(238, 238, 210));
+                square.setFillColor(LightColor);
             else
-                square.setFillColor(sf::Color(118, 150, 86));
+                square.setFillColor(sf::Color(DarkColor));
 
             window.draw(square);
 
@@ -43,8 +48,8 @@ void BoardRenderer::drawBoard(sf::RenderWindow& window) {
 
                 notation.setFillColor(
                     lightSquare
-                        ? sf::Color(118, 150, 86)
-                        : sf::Color(238, 238, 210)
+                        ? sf::Color(DarkColor)
+                        : sf::Color(LightColor)
                 );
 
                 window.draw(notation);
@@ -62,8 +67,8 @@ void BoardRenderer::drawBoard(sf::RenderWindow& window) {
 
                 notation.setFillColor(
                     lightSquare
-                        ? sf::Color(118, 150, 86)
-                        : sf::Color(238, 238, 210)
+                        ? sf::Color(DarkColor)
+                        : sf::Color(LightColor)
                 );
 
                 window.draw(notation);
