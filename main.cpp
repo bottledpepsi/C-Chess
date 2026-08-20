@@ -7,6 +7,8 @@ int main()
         "C Chess"
     );
 
+    window.setVerticalSyncEnabled(true);
+
     while (window.isOpen())
     {
         while (const std::optional event = window.pollEvent())
