@@ -18,6 +18,8 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(C_Chess
         main.cpp
+        src/render/BoardRenderer.cpp
+        include/render/BoardRenderer.hpp
 )
 
 target_link_libraries(C_Chess PRIVATE
