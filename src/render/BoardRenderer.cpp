@@ -42,7 +42,7 @@ void BoardRenderer::drawBoard(sf::RenderWindow& window) {
                 );
 
                 notation.setPosition({
-                    x + 5.f,
+                    x + SQUARE_SIZE / 1.25f,
                     y + SQUARE_SIZE - 22.f
                 });
 
