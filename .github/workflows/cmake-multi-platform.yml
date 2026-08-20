@@ -51,7 +51,8 @@ jobs:
           libflac-dev \
           libvorbis-dev \
           libopenal-dev \
-          libfreetype6-dev
+          libfreetype6-dev \
+          libharfbuzz-dev
 
       - name: Set reusable strings
         id: strings
