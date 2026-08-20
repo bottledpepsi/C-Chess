@@ -20,10 +20,19 @@ add_executable(C_Chess
         main.cpp
         src/render/BoardRenderer.cpp
         include/render/BoardRenderer.hpp
+        src/app/AssetManager.cpp
+        include/app/AssetManager.hpp
 )
 
 target_link_libraries(C_Chess PRIVATE
         SFML::Graphics
         SFML::Window
         SFML::System
+)
+
+add_custom_command(
+        TARGET C_Chess POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:C_Chess>/assets
 )
