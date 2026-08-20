@@ -5,6 +5,8 @@ project(C_Chess)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
+
 include(FetchContent)
 
 FetchContent_Declare(
