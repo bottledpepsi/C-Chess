@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 
-#include "include/app/AssetManager.hpp"
-#include "include/render/BoardRenderer.hpp"
+#include "../../include/app/AssetManager.hpp"
+#include "../../include/render/BoardRenderer.hpp"
 
 int main() {
     AssetManager assets;

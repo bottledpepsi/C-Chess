@@ -17,11 +17,13 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SFML)
 
 add_executable(C_Chess
-        main.cpp
+        src/app/app.cpp
         src/render/BoardRenderer.cpp
         include/render/BoardRenderer.hpp
         src/app/AssetManager.cpp
         include/app/AssetManager.hpp
+        src/input/InputHandler.cpp
+        include/input/InputHandler.hpp
 )
 
 target_link_libraries(C_Chess PRIVATE
