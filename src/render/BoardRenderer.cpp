@@ -3,6 +3,7 @@
 
 const sf::Color LightColor(238, 238, 210);
 const sf::Color DarkColor(118, 150, 86);
+const sf::Vector2f BOARD_ORIGIN(28.f, 70.f);
 
 
 BoardRenderer::BoardRenderer(
@@ -22,8 +23,8 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window) {
 
     for (int rank = 0; rank < BOARD_SIZE; ++rank) {
         for (int file = 0; file < BOARD_SIZE; ++file) {
-            float x = file * SQUARE_SIZE;
-            float y = rank * SQUARE_SIZE;
+            float x = BOARD_ORIGIN.x + file * SQUARE_SIZE;
+            float y = BOARD_ORIGIN.y + rank * SQUARE_SIZE;
 
             square.setPosition({x, y});
 
