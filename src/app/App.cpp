@@ -4,11 +4,11 @@
 #include "../../include/app/WindowAspectRatio.hpp"
 #include "../../include/render/BoardRenderer.hpp"
 
-constexpr float GAME_WIDTH = 852.f;
-constexpr float GAME_HEIGHT = 766.f;
+constexpr float WIN_W = 852.f;
+constexpr float WIN_H = 766.f;
 
 void updateView(sf::RenderWindow &window, sf::View &view) {
-    const float gameAspect = GAME_WIDTH / GAME_HEIGHT;
+    const float gameAspect = WIN_W / WIN_H;
 
     const sf::Vector2u windowSize = window.getSize();
 
@@ -59,7 +59,7 @@ int main() {
     sf::View gameView(
         sf::FloatRect(
             {0.f, 0.f},
-            {GAME_WIDTH, GAME_HEIGHT}
+            {WIN_W, WIN_H}
         )
     );
 
