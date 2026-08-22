@@ -18,6 +18,6 @@ private:
     AssetManager &assets;
 
     static constexpr int BOARD_SIZE = 8;
-    static constexpr float SQUARE_SIZE = 80.0f;
+    static constexpr float SQUARE_SIZE = 75.0f;
     static constexpr bool FLIPPED = false;
 };
