@@ -17,7 +17,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SFML)
 
 add_executable(C_Chess
-        src/app/app.cpp
+        src/app/App.cpp
         src/render/BoardRenderer.cpp
         include/render/BoardRenderer.hpp
         src/app/AssetManager.cpp
