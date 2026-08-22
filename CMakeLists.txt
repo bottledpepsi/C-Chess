@@ -24,6 +24,10 @@ add_executable(C_Chess
         include/app/AssetManager.hpp
         src/input/InputHandler.cpp
         include/input/InputHandler.hpp
+        include/app/WindowAspectRatio.hpp
+        src/app/WindowAspectRatioWindows.cpp
+        src/app/WindowAspectRatioLinux.cpp
+        src/app/WindowAspectRatioMacOS.mm
 )
 
 target_link_libraries(C_Chess PRIVATE
