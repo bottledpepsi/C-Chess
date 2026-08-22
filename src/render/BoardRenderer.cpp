@@ -6,14 +6,14 @@ const sf::Color DarkColor(118, 150, 86);
 
 
 BoardRenderer::BoardRenderer(
-    const chess::Board& board,
-    AssetManager& assetManager
+    const chess::Board &board,
+    AssetManager &assetManager
 )
     : board(board),
       assets(assetManager) {
 }
 
-void BoardRenderer::drawBoard(sf::RenderWindow& window) {
+void BoardRenderer::drawBoard(sf::RenderWindow &window) {
     sf::RectangleShape square;
     square.setSize({SQUARE_SIZE, SQUARE_SIZE});
 
