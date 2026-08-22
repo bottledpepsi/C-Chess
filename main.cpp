@@ -14,7 +14,7 @@ int main() {
     }
 
     sf::RenderWindow window(
-        sf::VideoMode({640, 640}),
+        sf::VideoMode({852, 766}),
         "C-Chess"
     );
 
