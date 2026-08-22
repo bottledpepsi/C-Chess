@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31)
 
-project(C_Chess LANGUAGES CXX OBJCXX)
+project(C_Chess LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,6 +14,7 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/SFML/SFML.git
         GIT_TAG        3.1.0
 )
+
 FetchContent_MakeAvailable(SFML)
 
 add_executable(C_Chess
@@ -25,10 +26,25 @@ add_executable(C_Chess
         src/input/InputHandler.cpp
         include/input/InputHandler.hpp
         include/app/WindowAspectRatio.hpp
-        src/app/WindowAspectRatioWindows.cpp
-        src/app/WindowAspectRatioLinux.cpp
-        src/app/WindowAspectRatioMacOS.mm
 )
+
+if(WIN32)
+    target_sources(C_Chess PRIVATE
+            src/app/WindowAspectRatioWindows.cpp
+    )
+
+elseif(APPLE)
+    enable_language(OBJCXX)
+
+    target_sources(C_Chess PRIVATE
+            src/app/WindowAspectRatioMacOS.mm
+    )
+
+elseif(UNIX)
+    target_sources(C_Chess PRIVATE
+            src/app/WindowAspectRatioLinux.cpp
+    )
+endif()
 
 target_link_libraries(C_Chess PRIVATE
         SFML::Graphics
