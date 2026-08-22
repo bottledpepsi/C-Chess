@@ -1,10 +1,14 @@
 #include <SFML/Graphics.hpp>
 
 #include "../../include/app/AssetManager.hpp"
+#include "../../include/app/WindowAspectRatio.hpp"
 #include "../../include/render/BoardRenderer.hpp"
 
+constexpr float GAME_WIDTH = 852.f;
+constexpr float GAME_HEIGHT = 766.f;
+
 void updateView(sf::RenderWindow &window, sf::View &view) {
-    const float gameAspect = 852.f / 766.f;
+    const float gameAspect = GAME_WIDTH / GAME_HEIGHT;
 
     const sf::Vector2u windowSize = window.getSize();
 
@@ -13,14 +17,16 @@ void updateView(sf::RenderWindow &window, sf::View &view) {
             static_cast<float>(windowSize.y);
 
     if (windowAspect > gameAspect) {
-        const float viewportWidth = gameAspect / windowAspect;
+        const float viewportWidth =
+                gameAspect / windowAspect;
 
         view.setViewport(sf::FloatRect(
             {(1.f - viewportWidth) / 2.f, 0.f},
             {viewportWidth, 1.f}
         ));
     } else {
-        const float viewportHeight = windowAspect / gameAspect;
+        const float viewportHeight =
+                windowAspect / gameAspect;
 
         view.setViewport(sf::FloatRect(
             {0.f, (1.f - viewportHeight) / 2.f},
@@ -53,11 +59,17 @@ int main() {
     sf::View gameView(
         sf::FloatRect(
             {0.f, 0.f},
-            {852.f, 766.f}
+            {GAME_WIDTH, GAME_HEIGHT}
         )
     );
 
     updateView(window, gameView);
+
+    WindowAspectRatio::lock(
+        window,
+        852,
+        766
+    );
 
     chess::Board board;
     BoardRenderer boardRenderer(board, assets);
@@ -70,9 +82,15 @@ int main() {
                 window.close();
             }
 
+            if (const auto *resized =
+                    event->getIf<sf::Event::Resized>()) {
+                updateView(window, gameView);
+            }
+
             if (const auto *keyPressed =
                     event->getIf<sf::Event::KeyPressed>()) {
-                if (keyPressed->code == sf::Keyboard::Key::F11) {
+                if (keyPressed->code ==
+                    sf::Keyboard::Key::F11) {
                     fullscreen = !fullscreen;
 
                     if (fullscreen) {
@@ -89,10 +107,15 @@ int main() {
                             sf::Style::Default,
                             sf::State::Windowed
                         );
+
+                        WindowAspectRatio::lock(
+                            window,
+                            852,
+                            766
+                        );
                     }
 
                     updateView(window, gameView);
-
                     window.setVerticalSyncEnabled(true);
                 }
             }
