@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.31)
 
-project(C_Chess)
+project(C_Chess LANGUAGES CXX OBJCXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,7 +17,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SFML)
 
 add_executable(C_Chess
-        src/app/app.cpp
+        src/app/App.cpp
         src/render/BoardRenderer.cpp
         include/render/BoardRenderer.hpp
         src/app/AssetManager.cpp
