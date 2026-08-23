@@ -4,6 +4,7 @@
 #include "../app/AssetManager.hpp"
 #include "../chess/chess.hpp"
 
+
 class BoardRenderer {
 public:
     BoardRenderer(
