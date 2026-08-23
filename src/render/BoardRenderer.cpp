@@ -1,8 +1,5 @@
 #include "../../include/render/BoardRenderer.hpp"
 
-#include <algorithm>
-#include <cmath>
-
 
 const sf::Color LightColor(238, 238, 210);
 const sf::Color DarkColor(118, 150, 86);
@@ -21,14 +18,8 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
     sf::RectangleShape square;
     square.setSize({SQUARE_SIZE, SQUARE_SIZE});
 
-    constexpr unsigned int BASE_CHARACTER_SIZE = 16;
-
-    const unsigned int scaledCharacterSize = std::max(
-        1u,
-        static_cast<unsigned int>(
-            std::round(BASE_CHARACTER_SIZE * pixelScale)
-        )
-    );
+    const unsigned int scaledCharacterSize =
+        AssetManager::sharpCharacterSize(16, pixelScale);
 
     sf::Text notation(assets.getFont("arial"));
     notation.setCharacterSize(scaledCharacterSize);

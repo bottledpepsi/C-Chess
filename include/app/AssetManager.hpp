@@ -22,6 +22,11 @@ public:
 
     sf::Texture &getTexture(const std::string &name);
 
+    static unsigned int sharpCharacterSize(
+        unsigned int baseCharacterSize,
+        float pixelScale
+    );
+
 private:
     std::unordered_map<std::string, sf::Font> fonts;
     std::unordered_map<std::string, sf::Texture> textures;

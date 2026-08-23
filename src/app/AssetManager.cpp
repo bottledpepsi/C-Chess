@@ -1,5 +1,8 @@
 #include "../../include/app/AssetManager.hpp"
 
+#include <algorithm>
+#include <cmath>
+
 bool AssetManager::loadFont(
     const std::string &name,
     const std::filesystem::path &path
@@ -8,6 +11,8 @@ bool AssetManager::loadFont(
 
     if (!font.openFromFile(path))
         return false;
+
+    font.setSmooth(true);
 
     fonts.emplace(name, std::move(font));
     return true;
@@ -34,4 +39,16 @@ bool AssetManager::loadTexture(
 
 sf::Texture &AssetManager::getTexture(const std::string &name) {
     return textures.at(name);
+}
+
+unsigned int AssetManager::sharpCharacterSize(
+    unsigned int baseCharacterSize,
+    float pixelScale
+) {
+    return std::max(
+        1u,
+        static_cast<unsigned int>(
+            std::round(static_cast<float>(baseCharacterSize) * pixelScale)
+        )
+    );
 }
