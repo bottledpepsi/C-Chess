@@ -16,3 +16,20 @@ bool AssetManager::loadFont(
 sf::Font &AssetManager::getFont(const std::string &name) {
     return fonts.at(name);
 }
+
+bool AssetManager::loadTexture(
+    const std::string &name,
+    const std::filesystem::path &path
+) {
+    sf::Texture texture;
+
+    if (!texture.loadFromFile(path))
+        return false;
+
+    textures.emplace(name, std::move(texture));
+    return true;
+}
+
+sf::Texture &AssetManager::getTexture(const std::string &name) {
+    return textures.at(name);
+}

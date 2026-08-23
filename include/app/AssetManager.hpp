@@ -15,6 +15,14 @@ public:
 
     sf::Font &getFont(const std::string &name);
 
+    bool loadTexture(
+        const std::string &name,
+        const std::filesystem::path &path
+    );
+
+    sf::Texture &getTexture(const std::string &name);
+
 private:
     std::unordered_map<std::string, sf::Font> fonts;
+    std::unordered_map<std::string, sf::Texture> textures;
 };
