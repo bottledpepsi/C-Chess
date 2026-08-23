@@ -12,7 +12,7 @@ public:
         AssetManager &assetManager
     );
 
-    void drawBoard(sf::RenderWindow &window);
+    void drawBoard(sf::RenderWindow &window, float pixelScale = 1.0f);
 
 private:
     chess::Board board;

@@ -1,13 +1,17 @@
 #include <SFML/Graphics.hpp>
 
+#include <vector>
+#include <utility>
+#include <string>
 #include "../../include/app/AssetManager.hpp"
 #include "../../include/app/WindowAspectRatio.hpp"
 #include "../../include/render/BoardRenderer.hpp"
+#include "../../include/render/PieceRenderer.hpp"
 
 constexpr float WIN_W = 852.f;
 constexpr float WIN_H = 766.f;
 
-void updateView(sf::RenderWindow &window, sf::View &view) {
+float updateView(sf::RenderWindow &window, sf::View &view) {
     const float gameAspect = WIN_W / WIN_H;
 
     const sf::Vector2u windowSize = window.getSize();
@@ -15,6 +19,8 @@ void updateView(sf::RenderWindow &window, sf::View &view) {
     const float windowAspect =
             static_cast<float>(windowSize.x) /
             static_cast<float>(windowSize.y);
+
+    float viewportHeightFraction = 1.f;
 
     if (windowAspect > gameAspect) {
         const float viewportWidth =
@@ -28,6 +34,8 @@ void updateView(sf::RenderWindow &window, sf::View &view) {
         const float viewportHeight =
                 windowAspect / gameAspect;
 
+        viewportHeightFraction = viewportHeight;
+
         view.setViewport(sf::FloatRect(
             {0.f, (1.f - viewportHeight) / 2.f},
             {1.f, viewportHeight}
@@ -35,6 +43,10 @@ void updateView(sf::RenderWindow &window, sf::View &view) {
     }
 
     window.setView(view);
+    const float viewportHeightPixels =
+            viewportHeightFraction * static_cast<float>(windowSize.y);
+
+    return viewportHeightPixels / WIN_H;
 }
 
 int main() {
@@ -45,6 +57,27 @@ int main() {
         "assets/fonts/arial.ttf"
     )) {
         return 1;
+    }
+
+    const std::vector<std::pair<std::string, std::string> > pieceTextures = {
+        {"b_bishop", "assets/images/b_bishop.png"},
+        {"b_king", "assets/images/b_king.png"},
+        {"b_knight", "assets/images/b_knight.png"},
+        {"b_pawn", "assets/images/b_pawn.png"},
+        {"b_queen", "assets/images/b_queen.png"},
+        {"b_rook", "assets/images/b_rook.png"},
+        {"w_bishop", "assets/images/w_bishop.png"},
+        {"w_king", "assets/images/w_king.png"},
+        {"w_knight", "assets/images/w_knight.png"},
+        {"w_pawn", "assets/images/w_pawn.png"},
+        {"w_queen", "assets/images/w_queen.png"},
+        {"w_rook", "assets/images/w_rook.png"},
+    };
+
+    for (const auto &[name, path]: pieceTextures) {
+        if (!assets.loadTexture(name, path)) {
+            return 1;
+        }
     }
 
     sf::RenderWindow window(
@@ -63,7 +96,7 @@ int main() {
         )
     );
 
-    updateView(window, gameView);
+    float pixelScale = updateView(window, gameView);
 
     WindowAspectRatio::lock(
         window,
@@ -73,6 +106,7 @@ int main() {
 
     chess::Board board;
     BoardRenderer boardRenderer(board, assets);
+    PieceRenderer pieceRenderer(board, assets);
 
     window.setVerticalSyncEnabled(true);
 
@@ -84,7 +118,7 @@ int main() {
 
             if (const auto *resized =
                     event->getIf<sf::Event::Resized>()) {
-                updateView(window, gameView);
+                pixelScale = updateView(window, gameView);
             }
 
             if (const auto *keyPressed =
@@ -115,7 +149,7 @@ int main() {
                         );
                     }
 
-                    updateView(window, gameView);
+                    pixelScale = updateView(window, gameView);
                     window.setVerticalSyncEnabled(true);
                 }
             }
@@ -123,7 +157,8 @@ int main() {
 
         window.clear();
 
-        boardRenderer.drawBoard(window);
+        boardRenderer.drawBoard(window, pixelScale);
+        pieceRenderer.drawPieces(window);
 
         window.display();
     }

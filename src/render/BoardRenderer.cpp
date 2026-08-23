@@ -1,5 +1,8 @@
 #include "../../include/render/BoardRenderer.hpp"
 
+#include <algorithm>
+#include <cmath>
+
 
 const sf::Color LightColor(238, 238, 210);
 const sf::Color DarkColor(118, 150, 86);
@@ -14,12 +17,26 @@ BoardRenderer::BoardRenderer(
       assets(assetManager) {
 }
 
-void BoardRenderer::drawBoard(sf::RenderWindow &window) {
+void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
     sf::RectangleShape square;
     square.setSize({SQUARE_SIZE, SQUARE_SIZE});
 
+    constexpr unsigned int BASE_CHARACTER_SIZE = 16;
+
+    const unsigned int scaledCharacterSize = std::max(
+        1u,
+        static_cast<unsigned int>(
+            std::round(BASE_CHARACTER_SIZE * pixelScale)
+        )
+    );
+
     sf::Text notation(assets.getFont("arial"));
-    notation.setCharacterSize(16);
+    notation.setCharacterSize(scaledCharacterSize);
+
+    if (pixelScale > 0.f) {
+        const float textScale = 1.f / pixelScale;
+        notation.setScale({textScale, textScale});
+    }
 
     for (int rank = 0; rank < BOARD_SIZE; ++rank) {
         for (int file = 0; file < BOARD_SIZE; ++file) {

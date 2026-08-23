@@ -26,6 +26,8 @@ bool AssetManager::loadTexture(
     if (!texture.loadFromFile(path))
         return false;
 
+    texture.setSmooth(true);
+
     textures.emplace(name, std::move(texture));
     return true;
 }
