@@ -19,7 +19,7 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
     square.setSize({SQUARE_SIZE, SQUARE_SIZE});
 
     const unsigned int scaledCharacterSize =
-        AssetManager::sharpCharacterSize(16, pixelScale);
+            AssetManager::sharpCharacterSize(16, pixelScale);
 
     sf::Text notation(assets.getFont("arial"));
     notation.setCharacterSize(scaledCharacterSize);
@@ -46,9 +46,15 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
             window.draw(square);
 
             if (rank == BOARD_SIZE - 1) {
-                notation.setString(
-                    static_cast<char>('a' + file)
-                );
+                if (FLIPPED == false) {
+                    notation.setString(
+                        static_cast<char>('a' + file)
+                    );
+                } else {
+                    notation.setString(
+                        static_cast<char>('h' - file)
+                    );
+                }
 
                 notation.setPosition({
                     x + SQUARE_SIZE / 1.25f,
@@ -65,9 +71,15 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
             }
 
             if (file == 0) {
-                notation.setString(
-                    std::to_string(BOARD_SIZE - rank)
-                );
+                if (FLIPPED == false) {
+                    notation.setString(
+                        std::to_string(BOARD_SIZE - rank)
+                    );
+                } else {
+                    notation.setString(
+                        std::to_string(rank + 1)
+                    );
+                }
 
                 notation.setPosition({
                     x + 5.f,
