@@ -1,4 +1,5 @@
 #include "../../include/render/BoardRenderer.hpp"
+#include "../../include/render/BoardConstants.hpp"
 
 
 const sf::Color LightColor(238, 238, 210);
@@ -13,7 +14,7 @@ BoardRenderer::BoardRenderer(
     : board(board),
       assets(assetManager),
       notation(assets.getFont("arial")) {
-    square.setSize({SQUARE_SIZE, SQUARE_SIZE});
+    square.setSize({BoardConstants::SQUARE_SIZE, BoardConstants::SQUARE_SIZE});
 }
 
 void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
@@ -28,14 +29,21 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
         notation.setScale({textScale, textScale});
     }
 
-    for (int rank = 0; rank < BOARD_SIZE; ++rank) {
-        for (int file = 0; file < BOARD_SIZE; ++file) {
-            float x = BOARD_ORIGIN.x + file * SQUARE_SIZE;
-            float y = BOARD_ORIGIN.y + rank * SQUARE_SIZE;
+    for (int screenRank = 0; screenRank < BoardConstants::BOARD_SIZE; ++screenRank) {
+        for (int screenFile = 0; screenFile < BoardConstants::BOARD_SIZE; ++screenFile) {
+            const int boardFile = BoardConstants::FLIPPED
+                ? BoardConstants::BOARD_SIZE - 1 - screenFile
+                : screenFile;
+            const int boardRank = BoardConstants::FLIPPED
+                ? screenRank
+                : BoardConstants::BOARD_SIZE - 1 - screenRank;
+
+            float x = BOARD_ORIGIN.x + screenFile * BoardConstants::SQUARE_SIZE;
+            float y = BOARD_ORIGIN.y + screenRank * BoardConstants::SQUARE_SIZE;
 
             square.setPosition({x, y});
 
-            bool lightSquare = (file + rank) % 2 == 0;
+            bool lightSquare = (boardFile + boardRank) % 2 != 0;
 
             if (lightSquare)
                 square.setFillColor(LightColor);
@@ -44,20 +52,14 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
 
             window.draw(square);
 
-            if (rank == BOARD_SIZE - 1) {
-                if (FLIPPED == false) {
-                    notation.setString(
-                        static_cast<char>('a' + file)
-                    );
-                } else {
-                    notation.setString(
-                        static_cast<char>('h' - file)
-                    );
-                }
+            if (screenRank == BoardConstants::BOARD_SIZE - 1) {
+                notation.setString(
+                    static_cast<char>('a' + boardFile)
+                );
 
                 notation.setPosition({
-                    x + SQUARE_SIZE / 1.25f,
-                    y + SQUARE_SIZE - 22.f
+                    x + BoardConstants::SQUARE_SIZE / 1.25f,
+                    y + BoardConstants::SQUARE_SIZE - 22.f
                 });
 
                 notation.setFillColor(
@@ -69,16 +71,10 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
                 window.draw(notation);
             }
 
-            if (file == 0) {
-                if (FLIPPED == false) {
-                    notation.setString(
-                        std::to_string(BOARD_SIZE - rank)
-                    );
-                } else {
-                    notation.setString(
-                        std::to_string(rank + 1)
-                    );
-                }
+            if (screenFile == 0) {
+                notation.setString(
+                    std::to_string(boardRank + 1)
+                );
 
                 notation.setPosition({
                     x + 5.f,

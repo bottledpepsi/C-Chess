@@ -19,8 +19,4 @@ private:
     AssetManager &assets;
     sf::RectangleShape square;
     sf::Text notation;
-
-    static constexpr int BOARD_SIZE = 8;
-    static constexpr float SQUARE_SIZE = 75.0f;
-    static constexpr bool FLIPPED = false;
 };

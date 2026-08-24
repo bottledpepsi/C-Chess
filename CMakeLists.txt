@@ -28,6 +28,7 @@ add_executable(C_Chess
         include/app/WindowAspectRatio.hpp
         src/render/PieceRenderer.cpp
         include/render/PieceRenderer.hpp
+        include/render/BoardConstants.hpp
 )
 
 if(WIN32)

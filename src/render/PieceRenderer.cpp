@@ -1,10 +1,10 @@
 #include "../../include/render/PieceRenderer.hpp"
-
+#include "../../include/render/BoardRenderer.hpp"
+#include "../../include/render/BoardConstants.hpp"
 #include <string>
 
+
 namespace {
-    constexpr int BOARD_SIZE = 8;
-    constexpr float SQUARE_SIZE = 75.0f;
     constexpr float SIZE_MODIFIER = 0.9f;
     const sf::Vector2f BOARD_ORIGIN(28.f, 70.f);
 
@@ -41,12 +41,19 @@ PieceRenderer::PieceRenderer(
 }
 
 void PieceRenderer::drawPieces(sf::RenderWindow &window) {
-    for (int rank = 0; rank < BOARD_SIZE; ++rank) {
-        for (int file = 0; file < BOARD_SIZE; ++file) {
-            const chess::Square square(
-                chess::File(file),
-                chess::Rank(BOARD_SIZE - 1 - rank)
-            );
+    for (int screenRank = 0; screenRank < BoardConstants::BOARD_SIZE; ++screenRank) {
+        for (int screenFile = 0; screenFile < BoardConstants::BOARD_SIZE; ++screenFile) {
+            const int boardFile = BoardConstants::FLIPPED
+                ? BoardConstants::BOARD_SIZE - 1 - screenFile
+                : screenFile;
+            const int boardRank = BoardConstants::FLIPPED
+                ? screenRank
+                : BoardConstants::BOARD_SIZE - 1 - screenRank;
+
+            const chess::Square square{
+                chess::File(boardFile),
+                chess::Rank(boardRank)
+            };
 
             const chess::Piece piece = board.at(square);
 
@@ -66,9 +73,9 @@ void PieceRenderer::drawPieces(sf::RenderWindow &window) {
 
             if (textureSize.x > 0 && textureSize.y > 0) {
                 sprite.setScale({
-                    (SQUARE_SIZE * SIZE_MODIFIER) /
+                    (BoardConstants::SQUARE_SIZE * SIZE_MODIFIER) /
                         static_cast<float>(textureSize.x),
-                    (SQUARE_SIZE * SIZE_MODIFIER) /
+                    (BoardConstants::SQUARE_SIZE * SIZE_MODIFIER) /
                         static_cast<float>(textureSize.y)
                 });
 
@@ -79,8 +86,8 @@ void PieceRenderer::drawPieces(sf::RenderWindow &window) {
             }
 
             sprite.setPosition({
-                BOARD_ORIGIN.x + file * SQUARE_SIZE + SQUARE_SIZE / 2.0f,
-                BOARD_ORIGIN.y + rank * SQUARE_SIZE + SQUARE_SIZE / 2.0f
+                BOARD_ORIGIN.x + screenFile * BoardConstants::SQUARE_SIZE + BoardConstants::SQUARE_SIZE / 2.0f,
+                BOARD_ORIGIN.y + screenRank * BoardConstants::SQUARE_SIZE + BoardConstants::SQUARE_SIZE / 2.0f
             });
 
             window.draw(sprite);
