@@ -15,8 +15,10 @@ public:
     void drawBoard(sf::RenderWindow &window, float pixelScale = 1.0f);
 
 private:
-    chess::Board board;
+    const chess::Board board;
     AssetManager &assets;
+    sf::RectangleShape square;
+    sf::Text notation;
 
     static constexpr int BOARD_SIZE = 8;
     static constexpr float SQUARE_SIZE = 75.0f;

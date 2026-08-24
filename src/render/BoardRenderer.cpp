@@ -11,17 +11,16 @@ BoardRenderer::BoardRenderer(
     AssetManager &assetManager
 )
     : board(board),
-      assets(assetManager) {
+      assets(assetManager),
+      notation(assets.getFont("arial")) {
+    square.setSize({SQUARE_SIZE, SQUARE_SIZE});
 }
 
 void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
-    sf::RectangleShape square;
-    square.setSize({SQUARE_SIZE, SQUARE_SIZE});
 
     const unsigned int scaledCharacterSize =
             AssetManager::sharpCharacterSize(16, pixelScale);
 
-    sf::Text notation(assets.getFont("arial"));
     notation.setCharacterSize(scaledCharacterSize);
 
     if (pixelScale > 0.f) {
