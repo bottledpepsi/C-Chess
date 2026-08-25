@@ -7,6 +7,7 @@
 #include "../../include/app/WindowAspectRatio.hpp"
 #include "../../include/render/BoardRenderer.hpp"
 #include "../../include/render/PieceRenderer.hpp"
+#include "../../include/input/InputHandler.hpp"
 
 constexpr float WIN_W = 852.f;
 constexpr float WIN_H = 766.f;
@@ -87,8 +88,6 @@ int main() {
         sf::State::Windowed
     );
 
-    bool fullscreen = false;
-
     sf::View gameView(
         sf::FloatRect(
             {0.f, 0.f},
@@ -107,57 +106,25 @@ int main() {
     chess::Board board;
     BoardRenderer boardRenderer(board, assets);
     PieceRenderer pieceRenderer(board, assets);
+    InputHandler inputHandler(board, window, gameView);
 
     window.setVerticalSyncEnabled(true);
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>()) {
-                window.close();
-            }
-
-            if (const auto *resized =
-                    event->getIf<sf::Event::Resized>()) {
-                pixelScale = updateView(window, gameView);
-            }
-
-            if (const auto *keyPressed =
-                    event->getIf<sf::Event::KeyPressed>()) {
-                if (keyPressed->code ==
-                    sf::Keyboard::Key::F11) {
-                    fullscreen = !fullscreen;
-
-                    if (fullscreen) {
-                        window.create(
-                            sf::VideoMode::getDesktopMode(),
-                            "C-Chess",
-                            sf::Style::Default,
-                            sf::State::Fullscreen
-                        );
-                    } else {
-                        window.create(
-                            sf::VideoMode({852, 766}),
-                            "C-Chess",
-                            sf::Style::Default,
-                            sf::State::Windowed
-                        );
-
-                        WindowAspectRatio::lock(
-                            window,
-                            852,
-                            766
-                        );
-                    }
-
-                    pixelScale = updateView(window, gameView);
-                    window.setVerticalSyncEnabled(true);
-                }
-            }
+            inputHandler.handleEvent(*event, pixelScale);
         }
+
+        pixelScale = updateView(window, gameView);
 
         window.clear();
 
-        boardRenderer.drawBoard(window, pixelScale);
+        boardRenderer.drawBoard(
+            window,
+            pixelScale,
+            inputHandler.selectedSquare(),
+            inputHandler.legalDestinations()
+        );
         pieceRenderer.drawPieces(window);
 
         window.display();

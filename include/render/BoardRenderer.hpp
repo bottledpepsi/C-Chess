@@ -1,6 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <optional>
+#include <vector>
 #include "../app/AssetManager.hpp"
 #include "../chess/chess.hpp"
 
@@ -12,15 +14,16 @@ public:
         AssetManager &assetManager
     );
 
-    void drawBoard(sf::RenderWindow &window, float pixelScale = 1.0f);
+    void drawBoard(
+        sf::RenderWindow &window,
+        float pixelScale = 1.0f,
+        std::optional<chess::Square> selectedSquare = std::nullopt,
+        const std::vector<chess::Square> &legalDestinations = {}
+    );
 
 private:
     const chess::Board board;
     AssetManager &assets;
     sf::RectangleShape square;
     sf::Text notation;
-
-    static constexpr int BOARD_SIZE = 8;
-    static constexpr float SQUARE_SIZE = 75.0f;
-    static constexpr bool FLIPPED = false;
 };

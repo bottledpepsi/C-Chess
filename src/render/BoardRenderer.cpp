@@ -1,10 +1,24 @@
 #include "../../include/render/BoardRenderer.hpp"
+#include "../../include/render/BoardConstants.hpp"
+#include "../../include/input/BoardCoords.hpp"
+#include <algorithm>
 
 
 const sf::Color LightColor(238, 238, 210);
 const sf::Color DarkColor(118, 150, 86);
-const sf::Vector2f BOARD_ORIGIN(28.f, 70.f);
+const sf::Color SelectedTint(246, 246, 105);
+const sf::Color DestinationTint(20, 85, 30);
 
+namespace {
+    sf::Color blend(sf::Color base, sf::Color tint, float tintWeight) {
+        const auto mix = [&](std::uint8_t b, std::uint8_t t) {
+            return static_cast<std::uint8_t>(
+                static_cast<float>(b) * (1.f - tintWeight) + static_cast<float>(t) * tintWeight
+            );
+        };
+        return sf::Color(mix(base.r, tint.r), mix(base.g, tint.g), mix(base.b, tint.b));
+    }
+}
 
 BoardRenderer::BoardRenderer(
     const chess::Board &board,
@@ -13,11 +27,15 @@ BoardRenderer::BoardRenderer(
     : board(board),
       assets(assetManager),
       notation(assets.getFont("arial")) {
-    square.setSize({SQUARE_SIZE, SQUARE_SIZE});
+    square.setSize({BoardConstants::SQUARE_SIZE, BoardConstants::SQUARE_SIZE});
 }
 
-void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
-
+void BoardRenderer::drawBoard(
+    sf::RenderWindow &window,
+    float pixelScale,
+    std::optional<chess::Square> selectedSquare,
+    const std::vector<chess::Square> &legalDestinations
+) {
     const unsigned int scaledCharacterSize =
             AssetManager::sharpCharacterSize(16, pixelScale);
 
@@ -28,36 +46,45 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
         notation.setScale({textScale, textScale});
     }
 
-    for (int rank = 0; rank < BOARD_SIZE; ++rank) {
-        for (int file = 0; file < BOARD_SIZE; ++file) {
-            float x = BOARD_ORIGIN.x + file * SQUARE_SIZE;
-            float y = BOARD_ORIGIN.y + rank * SQUARE_SIZE;
+    for (int screenRank = 0; screenRank < BoardConstants::BOARD_SIZE; ++screenRank) {
+        for (int screenFile = 0; screenFile < BoardConstants::BOARD_SIZE; ++screenFile) {
+            const int boardFile = BoardConstants::FLIPPED
+                                      ? BoardConstants::BOARD_SIZE - 1 - screenFile
+                                      : screenFile;
+            const int boardRank = BoardConstants::FLIPPED
+                                      ? screenRank
+                                      : BoardConstants::BOARD_SIZE - 1 - screenRank;
+
+            const chess::Square sq{chess::File(boardFile), chess::Rank(boardRank)};
+            const sf::Vector2f pos = BoardCoords::squareToScreen(sq, pixelScale);
+            const float x = pos.x;
+            const float y = pos.y;
 
             square.setPosition({x, y});
 
-            bool lightSquare = (file + rank) % 2 == 0;
+            bool lightSquare = (boardFile + boardRank) % 2 != 0;
 
-            if (lightSquare)
-                square.setFillColor(LightColor);
-            else
-                square.setFillColor(sf::Color(DarkColor));
+            sf::Color fillColor = lightSquare ? LightColor : sf::Color(DarkColor);
+
+            if (selectedSquare.has_value() && selectedSquare.value() == sq) {
+                fillColor = blend(fillColor, SelectedTint, 0.45f);
+            } else if (std::find(legalDestinations.begin(), legalDestinations.end(), sq) !=
+                       legalDestinations.end()) {
+                fillColor = blend(fillColor, DestinationTint, 0.35f);
+            }
+
+            square.setFillColor(fillColor);
 
             window.draw(square);
 
-            if (rank == BOARD_SIZE - 1) {
-                if (FLIPPED == false) {
-                    notation.setString(
-                        static_cast<char>('a' + file)
-                    );
-                } else {
-                    notation.setString(
-                        static_cast<char>('h' - file)
-                    );
-                }
+            if (screenRank == BoardConstants::BOARD_SIZE - 1) {
+                notation.setString(
+                    static_cast<char>('a' + boardFile)
+                );
 
                 notation.setPosition({
-                    x + SQUARE_SIZE / 1.25f,
-                    y + SQUARE_SIZE - 22.f
+                    x + BoardConstants::SQUARE_SIZE / 1.25f,
+                    y + BoardConstants::SQUARE_SIZE - 22.f
                 });
 
                 notation.setFillColor(
@@ -69,16 +96,10 @@ void BoardRenderer::drawBoard(sf::RenderWindow &window, float pixelScale) {
                 window.draw(notation);
             }
 
-            if (file == 0) {
-                if (FLIPPED == false) {
-                    notation.setString(
-                        std::to_string(BOARD_SIZE - rank)
-                    );
-                } else {
-                    notation.setString(
-                        std::to_string(rank + 1)
-                    );
-                }
+            if (screenFile == 0) {
+                notation.setString(
+                    std::to_string(boardRank + 1)
+                );
 
                 notation.setPosition({
                     x + 5.f,

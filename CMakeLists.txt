@@ -25,9 +25,12 @@ add_executable(C_Chess
         include/app/AssetManager.hpp
         src/input/InputHandler.cpp
         include/input/InputHandler.hpp
+        src/input/BoardCoords.cpp
+        include/input/BoardCoords.hpp
         include/app/WindowAspectRatio.hpp
         src/render/PieceRenderer.cpp
         include/render/PieceRenderer.hpp
+        include/render/BoardConstants.hpp
 )
 
 if(WIN32)
