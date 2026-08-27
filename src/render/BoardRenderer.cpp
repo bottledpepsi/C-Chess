@@ -1,12 +1,12 @@
 #include "../../include/render/BoardRenderer.hpp"
 #include "../../include/render/BoardConstants.hpp"
 #include "../../include/input/BoardCoords.hpp"
-#include <algorithm>
 
 
 const sf::Color LightColor(238, 238, 210);
 const sf::Color DarkColor(118, 150, 86);
 const sf::Color SelectedTint(246, 246, 105);
+const sf::Color CheckTint(255, 55, 55);
 
 namespace {
     sf::Color blend(sf::Color base, sf::Color tint, float tintWeight) {
@@ -74,6 +74,14 @@ void BoardRenderer::drawBoard(
             bool lightSquare = (boardFile + boardRank) % 2 != 0;
 
             sf::Color fillColor = lightSquare ? LightColor : sf::Color(DarkColor);
+
+            if (board.inCheck()) {
+                const chess::Square kingSquare = board.kingSq(board.sideToMove());
+
+                if (kingSquare == sq) {
+                    fillColor = blend(fillColor, CheckTint, 0.85f);
+                }
+            }
 
             if (selectedSquare.has_value() && selectedSquare.value() == sq) {
                 fillColor = blend(fillColor, SelectedTint, 0.45f);

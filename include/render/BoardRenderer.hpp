@@ -24,7 +24,7 @@ public:
     );
 
 private:
-    const chess::Board board;
+    const chess::Board &board;
     AssetManager &assets;
     sf::RectangleShape square;
     sf::Text notation;
