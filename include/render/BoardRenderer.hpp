@@ -9,6 +9,8 @@
 
 class BoardRenderer {
 public:
+    float pixelScale = 1.0f;
+
     BoardRenderer(
         const chess::Board &board,
         AssetManager &assetManager
@@ -16,9 +18,9 @@ public:
 
     void drawBoard(
         sf::RenderWindow &window,
-        float pixelScale = 1.0f,
         std::optional<chess::Square> selectedSquare = std::nullopt,
-        const std::vector<chess::Square> &legalDestinations = {}
+        const std::vector<chess::Square> &legalDestinations = {},
+        const std::vector<chess::Square> &legalCaptures = {}
     );
 
 private:
@@ -26,4 +28,7 @@ private:
     AssetManager &assets;
     sf::RectangleShape square;
     sf::Text notation;
+
+    sf::CircleShape DestinationDot;
+    sf::CircleShape captureRing;
 };

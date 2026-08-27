@@ -81,11 +81,15 @@ int main() {
         }
     }
 
+    sf::ContextSettings settings;
+    settings.antiAliasingLevel = 8;
+
     sf::RenderWindow window(
         sf::VideoMode({852, 766}),
         "C-Chess",
         sf::Style::Default,
-        sf::State::Windowed
+        sf::State::Windowed,
+        settings
     );
 
     sf::View gameView(
@@ -121,9 +125,9 @@ int main() {
 
         boardRenderer.drawBoard(
             window,
-            pixelScale,
             inputHandler.selectedSquare(),
-            inputHandler.legalDestinations()
+            inputHandler.legalDestinations(),
+            inputHandler.legalCaptures()
         );
         pieceRenderer.drawPieces(window);
 

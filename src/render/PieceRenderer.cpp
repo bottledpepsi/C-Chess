@@ -11,7 +11,7 @@ namespace {
     // Maps a chess::Piece to the AssetManager texture key used in App.cpp's pieceTextures table
     std::string textureKeyFor(chess::Piece piece) {
         const std::string colorPrefix =
-            piece.color() == chess::Color::WHITE ? "w_" : "b_";
+                piece.color() == chess::Color::WHITE ? "w_" : "b_";
 
         switch (piece.type().internal()) {
             case chess::PieceType::underlying::PAWN:
@@ -76,7 +76,7 @@ void PieceRenderer::drawPieces(sf::RenderWindow &window) {
                     (BoardConstants::SQUARE_SIZE * SIZE_MODIFIER) /
                     static_cast<float>(textureSize.x),
                     (BoardConstants::SQUARE_SIZE * SIZE_MODIFIER) /
-                        static_cast<float>(textureSize.y)
+                    static_cast<float>(textureSize.y)
                 });
 
                 sprite.setOrigin({

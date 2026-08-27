@@ -7,7 +7,6 @@
 const sf::Color LightColor(238, 238, 210);
 const sf::Color DarkColor(118, 150, 86);
 const sf::Color SelectedTint(246, 246, 105);
-const sf::Color DestinationTint(20, 85, 30);
 
 namespace {
     sf::Color blend(sf::Color base, sf::Color tint, float tintWeight) {
@@ -26,15 +25,25 @@ BoardRenderer::BoardRenderer(
 )
     : board(board),
       assets(assetManager),
-      notation(assets.getFont("arial")) {
+      notation(assets.getFont("arial")),
+      DestinationDot((BoardConstants::SQUARE_SIZE * 0.16f) * pixelScale),
+      captureRing((BoardConstants::SQUARE_SIZE / 2.f - 4.f) * pixelScale) {
     square.setSize({BoardConstants::SQUARE_SIZE, BoardConstants::SQUARE_SIZE});
+
+    DestinationDot.setFillColor(sf::Color(0, 0, 0, 90));
+    DestinationDot.setOrigin({DestinationDot.getRadius(), DestinationDot.getRadius()});
+
+    captureRing.setFillColor(sf::Color::Transparent);
+    captureRing.setOutlineColor(sf::Color(0, 0, 0, 90));
+    captureRing.setOutlineThickness(-4.f);
+    captureRing.setOrigin({captureRing.getRadius(), captureRing.getRadius()});
 }
 
 void BoardRenderer::drawBoard(
     sf::RenderWindow &window,
-    float pixelScale,
     std::optional<chess::Square> selectedSquare,
-    const std::vector<chess::Square> &legalDestinations
+    const std::vector<chess::Square> &legalDestinations,
+    const std::vector<chess::Square> &legalCaptures
 ) {
     const unsigned int scaledCharacterSize =
             AssetManager::sharpCharacterSize(16, pixelScale);
@@ -68,14 +77,25 @@ void BoardRenderer::drawBoard(
 
             if (selectedSquare.has_value() && selectedSquare.value() == sq) {
                 fillColor = blend(fillColor, SelectedTint, 0.45f);
-            } else if (std::find(legalDestinations.begin(), legalDestinations.end(), sq) !=
-                       legalDestinations.end()) {
-                fillColor = blend(fillColor, DestinationTint, 0.35f);
             }
 
             square.setFillColor(fillColor);
 
             window.draw(square);
+
+            const sf::Vector2f center{
+                x + BoardConstants::SQUARE_SIZE / 2.f,
+                y + BoardConstants::SQUARE_SIZE / 2.f
+            };
+
+            if (std::find(legalCaptures.begin(), legalCaptures.end(), sq) != legalCaptures.end()) {
+                captureRing.setPosition(center);
+                window.draw(captureRing);
+            } else if (std::find(legalDestinations.begin(), legalDestinations.end(), sq) !=
+                       legalDestinations.end()) {
+                DestinationDot.setPosition(center);
+                window.draw(DestinationDot);
+            }
 
             if (screenRank == BoardConstants::BOARD_SIZE - 1) {
                 notation.setString(

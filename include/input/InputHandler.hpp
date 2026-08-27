@@ -17,6 +17,8 @@ public:
 
     const std::vector<chess::Square> &legalDestinations() const;
 
+    std::vector<chess::Square> legalCaptures() const;
+
     bool awaitingPromotionChoice() const;
 
     void choosePromotion(chess::PieceType type);

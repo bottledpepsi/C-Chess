@@ -35,6 +35,18 @@ const std::vector<chess::Square> &InputHandler::legalDestinations() const {
     return legalDestinations_;
 }
 
+std::vector<chess::Square> InputHandler::legalCaptures() const {
+    std::vector<chess::Square> captures;
+
+    for (const chess::Square &sq: legalDestinations_) {
+        if (board_.at(sq) != chess::Piece::NONE) {
+            captures.push_back(sq);
+        }
+    }
+
+    return captures;
+}
+
 bool InputHandler::awaitingPromotionChoice() const {
     return awaitingPromotion_;
 }

@@ -1,7 +1,6 @@
 #include "../../include/app/AssetManager.hpp"
 
 #include <algorithm>
-#include <cmath>
 
 bool AssetManager::loadFont(
     const std::string &name,
