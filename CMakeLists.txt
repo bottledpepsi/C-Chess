@@ -55,6 +55,14 @@ elseif(UNIX)
     )
 endif()
 
+if (WIN32 AND MINGW)
+    target_link_options(C_Chess PRIVATE
+            -static-libgcc
+            -static-libstdc++
+            -static -lwinpthread
+    )
+endif ()
+
 target_link_libraries(C_Chess PRIVATE
         SFML::Graphics
         SFML::Window
