@@ -51,6 +51,14 @@ bool InputHandler::awaitingPromotionChoice() const {
     return awaitingPromotion_;
 }
 
+chess::Square InputHandler::promotionSquare() const {
+    return promotionTo_;
+}
+
+chess::Color InputHandler::promotionColor() const {
+    return board_.at(promotionFrom_).color();
+}
+
 void InputHandler::choosePromotion(chess::PieceType type) {
     if (!awaitingPromotion_) {
         return;

@@ -31,6 +31,8 @@ add_executable(C_Chess
         src/render/PieceRenderer.cpp
         include/render/PieceRenderer.hpp
         include/render/BoardConstants.hpp
+        src/render/PromotionRenderer.cpp
+        include/render/PromotionRenderer.hpp
 )
 
 if(WIN32)

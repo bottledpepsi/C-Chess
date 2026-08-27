@@ -8,6 +8,7 @@
 #include "../../include/render/BoardRenderer.hpp"
 #include "../../include/render/PieceRenderer.hpp"
 #include "../../include/input/InputHandler.hpp"
+#include "../../include/render/PromotionRenderer.hpp"
 
 constexpr float WIN_W = 852.f;
 constexpr float WIN_H = 766.f;
@@ -111,12 +112,21 @@ int main() {
     BoardRenderer boardRenderer(board, assets);
     PieceRenderer pieceRenderer(board, assets);
     InputHandler inputHandler(board, window, gameView);
+    PromotionRenderer promotionRenderer(assets, inputHandler);
 
     window.setVerticalSyncEnabled(true);
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
             inputHandler.handleEvent(*event, pixelScale);
+
+            if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>()) {
+                if (mouseButtonPressed->button == sf::Mouse::Button::Left) {
+                    const sf::Vector2f boardLocalPos =
+                        window.mapPixelToCoords(mouseButtonPressed->position, gameView);
+                    promotionRenderer.handleClick(boardLocalPos);
+                }
+            }
         }
 
         pixelScale = updateView(window, gameView);
@@ -130,6 +140,8 @@ int main() {
             inputHandler.legalCaptures()
         );
         pieceRenderer.drawPieces(window);
+
+        promotionRenderer.drawPromotion(window);
 
         window.display();
     }

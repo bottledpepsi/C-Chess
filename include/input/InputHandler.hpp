@@ -21,6 +21,10 @@ public:
 
     bool awaitingPromotionChoice() const;
 
+    chess::Square promotionSquare() const;
+
+    chess::Color promotionColor() const;
+
     void choosePromotion(chess::PieceType type);
 
 private:
