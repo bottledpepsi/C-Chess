@@ -33,6 +33,8 @@ add_executable(C_Chess
         include/render/BoardConstants.hpp
         src/render/PromotionRenderer.cpp
         include/render/PromotionRenderer.hpp
+        src/render/GameOverRenderer.cpp
+        include/render/GameOverRenderer.hpp
 )
 
 if(WIN32)

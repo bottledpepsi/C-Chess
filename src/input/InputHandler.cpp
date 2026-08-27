@@ -59,6 +59,26 @@ chess::Color InputHandler::promotionColor() const {
     return board_.at(promotionFrom_).color();
 }
 
+const chess::Board &InputHandler::board() const {
+    return board_;
+}
+
+bool InputHandler::isGameOver() const {
+    return gameOverState_.second != chess::GameResult::NONE;
+}
+
+chess::GameResult InputHandler::gameResult() const {
+    return gameOverState_.second;
+}
+
+chess::GameResultReason InputHandler::gameResultReason() const {
+    return gameOverState_.first;
+}
+
+void InputHandler::refreshGameOverState() {
+    gameOverState_ = board_.isGameOver();
+}
+
 void InputHandler::choosePromotion(chess::PieceType type) {
     if (!awaitingPromotion_) {
         return;
@@ -70,6 +90,7 @@ void InputHandler::choosePromotion(chess::PieceType type) {
             move.typeOf() == chess::Move::PROMOTION &&
             move.promotionType() == type) {
             board_.makeMove(move);
+            refreshGameOverState();
             clearSelection();
             return;
         }
@@ -77,6 +98,10 @@ void InputHandler::choosePromotion(chess::PieceType type) {
 }
 
 void InputHandler::handleMouseClick(sf::Vector2i pixelPos, float pixelScale) {
+    if (isGameOver()) {
+        return;
+    }
+
     if (awaitingPromotion_) {
         return;
     }
@@ -156,6 +181,7 @@ void InputHandler::attemptMove(chess::Square from, chess::Square to) {
 
     if (matches.size() == 1) {
         board_.makeMove(*matches.front());
+        refreshGameOverState();
         clearSelection();
         return;
     }

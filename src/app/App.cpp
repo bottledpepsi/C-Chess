@@ -9,6 +9,7 @@
 #include "../../include/render/PieceRenderer.hpp"
 #include "../../include/input/InputHandler.hpp"
 #include "../../include/render/PromotionRenderer.hpp"
+#include "../../include/render/GameOverRenderer.hpp"
 
 constexpr float WIN_W = 852.f;
 constexpr float WIN_H = 766.f;
@@ -113,6 +114,7 @@ int main() {
     PieceRenderer pieceRenderer(board, assets);
     InputHandler inputHandler(board, window, gameView);
     PromotionRenderer promotionRenderer(assets, inputHandler);
+    GameOverRenderer gameOverRenderer(assets, inputHandler);
 
     window.setVerticalSyncEnabled(true);
 
@@ -142,6 +144,8 @@ int main() {
         pieceRenderer.drawPieces(window);
 
         promotionRenderer.drawPromotion(window);
+
+        gameOverRenderer.drawGameOver(window);
 
         window.display();
     }

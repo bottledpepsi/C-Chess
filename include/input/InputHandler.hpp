@@ -27,6 +27,14 @@ public:
 
     void choosePromotion(chess::PieceType type);
 
+    const chess::Board &board() const;
+
+    bool isGameOver() const;
+
+    chess::GameResult gameResult() const;
+
+    chess::GameResultReason gameResultReason() const;
+
 private:
     chess::Board &board_;
     sf::RenderWindow &window_;
@@ -41,6 +49,11 @@ private:
     bool awaitingPromotion_ = false;
     chess::Square promotionFrom_;
     chess::Square promotionTo_;
+
+    std::pair<chess::GameResultReason, chess::GameResult> gameOverState_ =
+            {chess::GameResultReason::NONE, chess::GameResult::NONE};
+
+    void refreshGameOverState();
 
     void handleMouseClick(sf::Vector2i pixelPos, float pixelScale);
 
