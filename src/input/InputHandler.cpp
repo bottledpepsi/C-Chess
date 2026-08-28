@@ -198,19 +198,24 @@ void InputHandler::handleKeyPress(sf::Keyboard::Key key) {
 
     fullscreen_ = !fullscreen_;
 
+    sf::ContextSettings settings;
+    settings.antiAliasingLevel = 8;
+
     if (fullscreen_) {
         window_.create(
             sf::VideoMode::getDesktopMode(),
             "C-Chess",
             sf::Style::Default,
-            sf::State::Fullscreen
+            sf::State::Fullscreen,
+            settings
         );
     } else {
         window_.create(
             sf::VideoMode({852, 766}),
             "C-Chess",
             sf::Style::Default,
-            sf::State::Windowed
+            sf::State::Windowed,
+            settings
         );
 
         WindowAspectRatio::lock(
