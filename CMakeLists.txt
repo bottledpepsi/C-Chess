@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 include(FetchContent)
 
@@ -38,11 +39,15 @@ add_executable(C_Chess
 )
 
 if(WIN32)
+
     target_sources(C_Chess PRIVATE
             src/app/WindowAspectRatioWindows.cpp
     )
 
+    target_compile_definitions(C_Chess PRIVATE SFML_STATIC)
+
 elseif(APPLE)
+
     enable_language(OBJCXX)
 
     target_sources(C_Chess PRIVATE
@@ -50,18 +55,12 @@ elseif(APPLE)
     )
 
 elseif(UNIX)
+
     target_sources(C_Chess PRIVATE
             src/app/WindowAspectRatioLinux.cpp
     )
-endif()
 
-if (WIN32 AND MINGW)
-    target_link_options(C_Chess PRIVATE
-            -static-libgcc
-            -static-libstdc++
-            -static -lwinpthread
-    )
-endif ()
+endif()
 
 target_link_libraries(C_Chess PRIVATE
         SFML::Graphics
@@ -69,9 +68,32 @@ target_link_libraries(C_Chess PRIVATE
         SFML::System
 )
 
-add_custom_command(
-        TARGET C_Chess POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/assets
-        $<TARGET_FILE_DIR:C_Chess>/assets
-)
+if(WIN32 AND MINGW)
+
+    target_link_options(C_Chess PRIVATE
+            -static-libgcc
+            -static-libstdc++
+    )
+
+    get_filename_component(MINGW_BIN_DIR
+            ${CMAKE_CXX_COMPILER}
+            DIRECTORY
+    )
+
+    add_custom_command(
+            TARGET C_Chess POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${MINGW_BIN_DIR}/libwinpthread-1.dll"
+            "$<TARGET_FILE_DIR:C_Chess>"
+    )
+
+endif()
+
+if(EXISTS "${CMAKE_SOURCE_DIR}/assets")
+    add_custom_command(
+            TARGET C_Chess POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/assets"
+            "$<TARGET_FILE_DIR:C_Chess>/assets"
+    )
+endif()
