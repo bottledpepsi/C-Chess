@@ -1,0 +1,98 @@
+name: Nightly Build
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  check-for-commits:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check for commits in the last 24 hours
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          COUNT=$(git log --oneline --since="24 hours ago" | wc -l)
+          echo "Commits in last 24h: $COUNT"
+          if [ "$COUNT" -gt 0 ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: check-for-commits
+    if: needs.check-for-commits.outputs.should_run == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux
+          - os: windows-latest
+            name: windows
+          - os: macos-latest
+            name: macos
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install a recent CMake
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: "3.31.0"
+
+      - name: Install Linux SFML build dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libx11-dev libxrandr-dev libxcursor-dev libxi-dev libxext-dev \
+            libgl1-mesa-dev libudev-dev \
+            libharfbuzz-dev \
+            libvorbis-dev libogg-dev libflac-dev libopenal-dev
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Stage build output (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        shell: bash
+        run: |
+          mkdir -p dist
+          if [ -d "build/C_Chess.app" ]; then
+            cp -R build/C_Chess.app dist/
+          else
+            cp build/C_Chess dist/
+            cp -R build/assets dist/assets
+          fi
+
+      - name: Stage build output (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp build/Release/C_Chess.exe dist/
+          cp -R build/Release/assets dist/assets
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: C_Chess-${{ matrix.name }}-nightly
+          path: dist/
+          retention-days: 14
