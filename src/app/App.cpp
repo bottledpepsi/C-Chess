@@ -3,6 +3,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include <filesystem>
 #include "../../include/app/AssetManager.hpp"
 #include "../../include/app/WindowAspectRatio.hpp"
 #include "../../include/render/BoardRenderer.hpp"
@@ -10,6 +11,33 @@
 #include "../../include/input/InputHandler.hpp"
 #include "../../include/render/PromotionRenderer.hpp"
 #include "../../include/render/GameOverRenderer.hpp"
+
+
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#endif
+
+void setWorkingDirectoryToExecutablePath() {
+#if defined(__APPLE__)
+    uint32_t size = 0;
+    _NSGetExecutablePath(nullptr, &size);
+
+    std::string buffer(size, '\0');
+    if (_NSGetExecutablePath(buffer.data(), &size) != 0) {
+        return;
+    }
+
+    std::filesystem::path exePath = std::filesystem::canonical(buffer);
+    std::filesystem::path exeDir = exePath.parent_path();
+
+    if (exeDir.filename() == "MacOS" &&
+        exeDir.parent_path().filename() == "Contents") {
+        exeDir = exeDir.parent_path().parent_path().parent_path();
+        }
+
+    std::filesystem::current_path(exeDir);
+#endif
+}
 
 constexpr float WIN_W = 852.f;
 constexpr float WIN_H = 766.f;
@@ -53,6 +81,8 @@ float updateView(sf::RenderWindow &window, sf::View &view) {
 }
 
 int main() {
+    setWorkingDirectoryToExecutablePath();
+
     AssetManager assets;
 
     if (!assets.loadFont(

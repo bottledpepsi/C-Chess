@@ -18,7 +18,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SFML)
 
-add_executable(C_Chess
+add_executable(C_Chess MACOSX_BUNDLE
         src/app/App.cpp
         src/render/BoardRenderer.cpp
         include/render/BoardRenderer.hpp
