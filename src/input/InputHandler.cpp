@@ -2,10 +2,30 @@
 #include "../../include/input/BoardCoords.hpp"
 #include "../../include/app/WindowAspectRatio.hpp"
 
-InputHandler::InputHandler(chess::Board &board, sf::RenderWindow &window, sf::View &gameView)
+InputHandler::InputHandler(chess::Board &board,
+    sf::RenderWindow &window,
+    sf::View &gameView,
+    const sf::SoundBuffer &moveSoundBuffer,
+    const sf::SoundBuffer &captureSoundBuffer
+    )
     : board_(board),
       window_(window),
-      gameView_(gameView) {
+      gameView_(gameView),
+      moveSound_(moveSoundBuffer),
+      captureSound_(captureSoundBuffer) {
+
+}
+
+void InputHandler::playMoveSound(const chess::Move &move) {
+    const bool isCapture =
+        board_.at(move.to()) != chess::Piece::NONE ||
+        move.typeOf() == chess::Move::ENPASSANT;
+
+    if (isCapture) {
+        captureSound_.play();
+    } else {
+        moveSound_.play();
+    }
 }
 
 void InputHandler::handleEvent(const sf::Event &event, float pixelScale) {
@@ -89,6 +109,7 @@ void InputHandler::choosePromotion(chess::PieceType type) {
             move.to() == promotionTo_ &&
             move.typeOf() == chess::Move::PROMOTION &&
             move.promotionType() == type) {
+            playMoveSound(move);
             board_.makeMove(move);
             refreshGameOverState();
             clearSelection();
@@ -180,6 +201,7 @@ void InputHandler::attemptMove(chess::Square from, chess::Square to) {
     }
 
     if (matches.size() == 1) {
+        playMoveSound(*matches.front());
         board_.makeMove(*matches.front());
         refreshGameOverState();
         clearSelection();

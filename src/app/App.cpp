@@ -83,6 +83,17 @@ int main() {
         }
     }
 
+    const std::vector<std::pair<std::string, std::string> > soundFiles = {
+        {"move", "assets/audio/move.ogg"},
+        {"capture", "assets/audio/capture.ogg"}
+    };
+
+    for (const auto &[name, path]: soundFiles) {
+        if (!assets.loadSound(name, path)) {
+            return 1;
+        }
+    }
+
     sf::ContextSettings settings;
     settings.antiAliasingLevel = 8;
 
@@ -112,7 +123,13 @@ int main() {
     chess::Board board;
     BoardRenderer boardRenderer(board, assets);
     PieceRenderer pieceRenderer(board, assets);
-    InputHandler inputHandler(board, window, gameView);
+    InputHandler inputHandler(
+        board,
+        window,
+        gameView,
+        assets.getSound("move"),
+        assets.getSound("capture")
+    );
     PromotionRenderer promotionRenderer(assets, inputHandler);
     GameOverRenderer gameOverRenderer(assets, inputHandler);
 
@@ -125,7 +142,7 @@ int main() {
             if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mouseButtonPressed->button == sf::Mouse::Button::Left) {
                     const sf::Vector2f boardLocalPos =
-                        window.mapPixelToCoords(mouseButtonPressed->position, gameView);
+                            window.mapPixelToCoords(mouseButtonPressed->position, gameView);
                     promotionRenderer.handleClick(boardLocalPos);
                 }
             }

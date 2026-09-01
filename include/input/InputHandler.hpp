@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include <optional>
 #include <vector>
@@ -9,7 +10,12 @@
 
 class InputHandler {
 public:
-    InputHandler(chess::Board &board, sf::RenderWindow &window, sf::View &gameView);
+    InputHandler(chess::Board &board,
+        sf::RenderWindow &window,
+        sf::View &gameView,
+        const sf::SoundBuffer &moveSoundBuffer,
+        const sf::SoundBuffer &captureSoundBuffer
+        );
 
     void handleEvent(const sf::Event &event, float pixelScale);
 
@@ -40,6 +46,9 @@ private:
     sf::RenderWindow &window_;
     sf::View &gameView_;
 
+    sf::Sound moveSound_;
+    sf::Sound captureSound_;
+
     std::optional<chess::Square> selected_;
     chess::Movelist candidateMoves_;
     bool fullscreen_ = false;
@@ -62,4 +71,6 @@ private:
     void attemptMove(chess::Square from, chess::Square to);
 
     void clearSelection();
+
+    void playMoveSound(const chess::Move &move);
 };
