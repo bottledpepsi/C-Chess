@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "SFML/Audio/SoundBuffer.hpp"
+
 bool AssetManager::loadFont(
     const std::string &name,
     const std::filesystem::path &path
@@ -50,4 +52,21 @@ unsigned int AssetManager::sharpCharacterSize(
             std::round(static_cast<float>(baseCharacterSize) * pixelScale)
         )
     );
+}
+
+bool AssetManager::loadSound(
+    const std::string &name,
+    const std::filesystem::path &path
+    ) {
+    sf::SoundBuffer buffer;
+
+    if (!buffer.loadFromFile(path))
+        return false;
+
+    sounds.emplace(name, std::move(buffer));
+    return true;
+}
+
+sf::SoundBuffer &AssetManager::getSound(const std::string &name) {
+    return sounds.at(name);
 }
