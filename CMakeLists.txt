@@ -66,6 +66,7 @@ target_link_libraries(C_Chess PRIVATE
         SFML::Graphics
         SFML::Window
         SFML::System
+        SFML::Audio
 )
 
 if(WIN32 AND MINGW)
