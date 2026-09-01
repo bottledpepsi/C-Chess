@@ -1,7 +1,7 @@
 #include "../../include/input/BoardCoords.hpp"
 #include "../../include/render/BoardConstants.hpp"
 
-const sf::Vector2f BoardCoords::BOARD_ORIGIN(28.f, 70.f);
+const sf::Vector2f BoardCoords::BOARD_ORIGIN(60.f, 84.f);
 
 chess::Square BoardCoords::screenToSquare(sf::Vector2f boardLocalPos, float) {
     const float relativeX = boardLocalPos.x - BOARD_ORIGIN.x;

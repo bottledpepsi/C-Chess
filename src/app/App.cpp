@@ -39,8 +39,8 @@ void setWorkingDirectoryToExecutablePath() {
 #endif
 }
 
-constexpr float WIN_W = 852.f;
-constexpr float WIN_H = 766.f;
+constexpr float WIN_W = 1024.f;
+constexpr float WIN_H = 768.f;
 
 float updateView(sf::RenderWindow &window, sf::View &view) {
     const float gameAspect = WIN_W / WIN_H;
@@ -128,7 +128,7 @@ int main() {
     settings.antiAliasingLevel = 8;
 
     sf::RenderWindow window(
-        sf::VideoMode({852, 766}),
+        sf::VideoMode({1024, 768}),
         "C-Chess",
         sf::Style::Default,
         sf::State::Windowed,
@@ -146,8 +146,8 @@ int main() {
 
     WindowAspectRatio::lock(
         window,
-        852,
-        766
+        1024,
+        768
     );
 
     chess::Board board;

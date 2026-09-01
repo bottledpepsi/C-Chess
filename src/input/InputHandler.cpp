@@ -233,7 +233,7 @@ void InputHandler::handleKeyPress(sf::Keyboard::Key key) {
         );
     } else {
         window_.create(
-            sf::VideoMode({852, 766}),
+            sf::VideoMode({1024, 768}),
             "C-Chess",
             sf::Style::Default,
             sf::State::Windowed,
@@ -242,8 +242,8 @@ void InputHandler::handleKeyPress(sf::Keyboard::Key key) {
 
         WindowAspectRatio::lock(
             window_,
-            852,
-            766
+            1024,
+            768
         );
     }
 
