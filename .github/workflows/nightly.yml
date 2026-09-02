@@ -71,10 +71,27 @@ jobs:
             cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
           fi
 
+      - name: Diagnose CMake environment (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Write-Host "CMAKE_GENERATOR env var: '$env:CMAKE_GENERATOR'"
+          Write-Host "--- cmake --help (first 20 lines, shows default generator marked with *) ---"
+          (cmake --help) | Select-Object -First 20
+          Write-Host "--- vswhere output ---"
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          if (Test-Path $vswhere) {
+            & $vswhere -all -products * -format text
+          } else {
+            Write-Host "vswhere.exe not found at expected path"
+          }
+
       - name: Configure (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
-        run: cmake -S . -B build -A x64
+        env:
+          CMAKE_GENERATOR: ""
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
 
       - name: Build
         run: cmake --build build --config Release --parallel
