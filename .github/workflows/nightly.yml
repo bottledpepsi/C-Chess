@@ -54,10 +54,6 @@ jobs:
         with:
           cmakeVersion: "3.31.0"
 
-      - name: Setup MSVC dev environment
-        if: matrix.os == 'windows-latest'
-        uses: ilammy/msvc-dev-cmd@v1
-
       - name: Install Linux SFML build dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -69,7 +65,13 @@ jobs:
             libvorbis-dev libogg-dev libflac-dev libopenal-dev
 
       - name: Configure
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+          else
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          fi
 
       - name: Build
         run: cmake --build build --config Release --parallel
