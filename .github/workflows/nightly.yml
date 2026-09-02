@@ -52,7 +52,7 @@ jobs:
       - name: Install a recent CMake
         uses: lukka/get-cmake@latest
         with:
-          cmakeVersion: "3.31.0"
+          cmakeVersion: "4.4.3"
 
       - name: Install Linux SFML build dependencies
         if: matrix.os == 'ubuntu-latest'
@@ -74,18 +74,7 @@ jobs:
       - name: Configure (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
-        run: |
-          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-          $vsMajor = (& $vswhere -latest -property catalog_productLineVersion)
-          $vsYear = @{ "17" = "2022"; "18" = "2026" }[$vsMajor]
-          if (-not $vsYear) {
-            Write-Host "Unrecognized VS major version '$vsMajor', letting CMake auto-select generator"
-            cmake -S . -B build -A x64
-          } else {
-            $genName = "Visual Studio $vsMajor $vsYear"
-            Write-Host "Detected $genName"
-            cmake -S . -B build -G "$genName" -A x64
-          }
+        run: cmake -S . -B build -A x64
 
       - name: Build
         run: cmake --build build --config Release --parallel
