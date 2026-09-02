@@ -54,6 +54,10 @@ jobs:
         with:
           cmakeVersion: "3.31.0"
 
+      - name: Setup MSVC dev environment
+        if: matrix.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Install Linux SFML build dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
