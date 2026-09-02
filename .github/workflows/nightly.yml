@@ -51,8 +51,6 @@ jobs:
 
       - name: Install a recent CMake
         uses: lukka/get-cmake@latest
-        with:
-          cmakeVersion: "4.4.3"
 
       - name: Install Linux SFML build dependencies
         if: matrix.os == 'ubuntu-latest'
