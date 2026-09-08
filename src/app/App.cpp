@@ -11,6 +11,7 @@
 #include "../../include/input/InputHandler.hpp"
 #include "../../include/render/PromotionRenderer.hpp"
 #include "../../include/render/GameOverRenderer.hpp"
+#include "../../include/render/TrayRenderer.hpp"
 
 
 #if defined(__APPLE__)
@@ -152,6 +153,7 @@ int main() {
 
     chess::Board board;
     BoardRenderer boardRenderer(board, assets);
+    TrayRenderer trayRenderer(assets);
     PieceRenderer pieceRenderer(board, assets);
     InputHandler inputHandler(
         board,
@@ -188,6 +190,9 @@ int main() {
             inputHandler.legalDestinations(),
             inputHandler.legalCaptures()
         );
+
+        trayRenderer.drawTrays(window);
+
         pieceRenderer.drawPieces(window);
 
         promotionRenderer.drawPromotion(window);

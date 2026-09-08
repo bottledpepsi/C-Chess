@@ -36,6 +36,8 @@ add_executable(C_Chess MACOSX_BUNDLE
         include/render/PromotionRenderer.hpp
         src/render/GameOverRenderer.cpp
         include/render/GameOverRenderer.hpp
+        src/render/TrayRenderer.cpp
+        include/render/TrayRenderer.hpp
 )
 
 if(WIN32)
