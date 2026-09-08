@@ -5,6 +5,7 @@
 #include <string>
 #include <filesystem>
 #include "../../include/app/AssetManager.hpp"
+#include "../../include/app/Config.hpp"
 #include "../../include/app/WindowAspectRatio.hpp"
 #include "../../include/render/BoardRenderer.hpp"
 #include "../../include/render/PieceRenderer.hpp"
@@ -31,20 +32,12 @@ void setWorkingDirectoryToExecutablePath() {
     std::filesystem::path exePath = std::filesystem::canonical(buffer);
     std::filesystem::path exeDir = exePath.parent_path();
 
-    if (exeDir.filename() == "MacOS" &&
-        exeDir.parent_path().filename() == "Contents") {
-        exeDir = exeDir.parent_path().parent_path().parent_path();
-        }
-
     std::filesystem::current_path(exeDir);
 #endif
 }
 
-constexpr float WIN_W = 1024.f;
-constexpr float WIN_H = 768.f;
-
-float updateView(sf::RenderWindow &window, sf::View &view) {
-    const float gameAspect = WIN_W / WIN_H;
+float updateView(sf::RenderWindow &window, sf::View &view, float gameWidth, float gameHeight) {
+    const float gameAspect = gameWidth / gameHeight;
 
     const sf::Vector2u windowSize = window.getSize();
 
@@ -78,11 +71,16 @@ float updateView(sf::RenderWindow &window, sf::View &view) {
     const float viewportHeightPixels =
             viewportHeightFraction * static_cast<float>(windowSize.y);
 
-    return viewportHeightPixels / WIN_H;
+    return viewportHeightPixels / gameHeight;
 }
 
 int main() {
     setWorkingDirectoryToExecutablePath();
+
+    const Config config = Config::load();
+
+    const auto windowWidth = static_cast<float>(config.windowWidth);
+    const auto windowHeight = static_cast<float>(config.windowHeight);
 
     AssetManager assets;
 
@@ -129,7 +127,7 @@ int main() {
     settings.antiAliasingLevel = 8;
 
     sf::RenderWindow window(
-        sf::VideoMode({1024, 768}),
+        sf::VideoMode({config.windowWidth, config.windowHeight}),
         "C-Chess",
         sf::Style::Default,
         sf::State::Windowed,
@@ -139,17 +137,27 @@ int main() {
     sf::View gameView(
         sf::FloatRect(
             {0.f, 0.f},
-            {WIN_W, WIN_H}
+            {windowWidth, windowHeight}
         )
     );
 
-    float pixelScale = updateView(window, gameView);
+    float pixelScale = updateView(window, gameView, windowWidth, windowHeight);
 
     WindowAspectRatio::lock(
         window,
-        1024,
-        768
+        config.windowWidth,
+        config.windowHeight
     );
+
+    if (config.startFullscreen) {
+        window.create(
+            sf::VideoMode::getDesktopMode(),
+            "C-Chess",
+            sf::Style::Default,
+            sf::State::Fullscreen,
+            settings
+        );
+    }
 
     chess::Board board;
     BoardRenderer boardRenderer(board, assets);
@@ -160,7 +168,8 @@ int main() {
         window,
         gameView,
         assets.getSound("move"),
-        assets.getSound("capture")
+        assets.getSound("capture"),
+        config
     );
     PromotionRenderer promotionRenderer(assets, inputHandler);
     GameOverRenderer gameOverRenderer(assets, inputHandler);
@@ -180,7 +189,7 @@ int main() {
             }
         }
 
-        pixelScale = updateView(window, gameView);
+        pixelScale = updateView(window, gameView, windowWidth, windowHeight);
 
         window.clear();
 

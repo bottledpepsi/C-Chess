@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../chess/chess.hpp"
+#include "../app/Config.hpp"
 
 class InputHandler {
 public:
@@ -14,7 +15,8 @@ public:
         sf::RenderWindow &window,
         sf::View &gameView,
         const sf::SoundBuffer &moveSoundBuffer,
-        const sf::SoundBuffer &captureSoundBuffer
+        const sf::SoundBuffer &captureSoundBuffer,
+        Config config
         );
 
     void handleEvent(const sf::Event &event, float pixelScale);
@@ -45,6 +47,7 @@ private:
     chess::Board &board_;
     sf::RenderWindow &window_;
     sf::View &gameView_;
+    Config config_;
 
     sf::Sound moveSound_;
     sf::Sound captureSound_;

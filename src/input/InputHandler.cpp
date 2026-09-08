@@ -6,13 +6,16 @@ InputHandler::InputHandler(chess::Board &board,
     sf::RenderWindow &window,
     sf::View &gameView,
     const sf::SoundBuffer &moveSoundBuffer,
-    const sf::SoundBuffer &captureSoundBuffer
+    const sf::SoundBuffer &captureSoundBuffer,
+    Config config
     )
     : board_(board),
       window_(window),
       gameView_(gameView),
+      config_(config),
       moveSound_(moveSoundBuffer),
-      captureSound_(captureSoundBuffer) {
+      captureSound_(captureSoundBuffer),
+      fullscreen_(config.startFullscreen) {
 
 }
 
@@ -233,7 +236,7 @@ void InputHandler::handleKeyPress(sf::Keyboard::Key key) {
         );
     } else {
         window_.create(
-            sf::VideoMode({1024, 768}),
+            sf::VideoMode({config_.windowWidth, config_.windowHeight}),
             "C-Chess",
             sf::Style::Default,
             sf::State::Windowed,
@@ -242,8 +245,8 @@ void InputHandler::handleKeyPress(sf::Keyboard::Key key) {
 
         WindowAspectRatio::lock(
             window_,
-            1024,
-            768
+            config_.windowWidth,
+            config_.windowHeight
         );
     }
 

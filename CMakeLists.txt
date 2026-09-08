@@ -24,6 +24,8 @@ add_executable(C_Chess MACOSX_BUNDLE
         include/render/BoardRenderer.hpp
         src/app/AssetManager.cpp
         include/app/AssetManager.hpp
+        src/app/Config.cpp
+        include/app/Config.hpp
         src/input/InputHandler.cpp
         include/input/InputHandler.hpp
         src/input/BoardCoords.cpp
@@ -98,5 +100,14 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/assets")
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/assets"
             "$<TARGET_FILE_DIR:C_Chess>/assets"
+    )
+endif()
+
+if(EXISTS "${CMAKE_SOURCE_DIR}/config.toml")
+    add_custom_command(
+            TARGET C_Chess POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/config.toml"
+            "$<TARGET_FILE_DIR:C_Chess>/config.toml"
     )
 endif()
