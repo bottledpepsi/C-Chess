@@ -1,6 +1,5 @@
 #include "../../include/input/InputHandler.hpp"
 #include "../../include/input/BoardCoords.hpp"
-#include "../../include/app/WindowAspectRatio.hpp"
 
 InputHandler::InputHandler(chess::Board &board,
     sf::RenderWindow &window,
@@ -31,7 +30,7 @@ void InputHandler::playMoveSound(const chess::Move &move) {
     }
 }
 
-void InputHandler::handleEvent(const sf::Event &event, float pixelScale) {
+void InputHandler::handleEvent(const sf::Event &event, const BoardLayout &layout) {
     if (event.is<sf::Event::Closed>()) {
         window_.close();
         return;
@@ -39,7 +38,7 @@ void InputHandler::handleEvent(const sf::Event &event, float pixelScale) {
 
     if (const auto *mouseButtonPressed = event.getIf<sf::Event::MouseButtonPressed>()) {
         if (mouseButtonPressed->button == sf::Mouse::Button::Left) {
-            handleMouseClick(mouseButtonPressed->position, pixelScale);
+            handleMouseClick(mouseButtonPressed->position, layout);
         }
         return;
     }
@@ -121,7 +120,7 @@ void InputHandler::choosePromotion(chess::PieceType type) {
     }
 }
 
-void InputHandler::handleMouseClick(sf::Vector2i pixelPos, float pixelScale) {
+void InputHandler::handleMouseClick(sf::Vector2i pixelPos, const BoardLayout &layout) {
     if (isGameOver()) {
         return;
     }
@@ -131,7 +130,7 @@ void InputHandler::handleMouseClick(sf::Vector2i pixelPos, float pixelScale) {
     }
 
     const sf::Vector2f boardLocalPos = window_.mapPixelToCoords(pixelPos, gameView_);
-    const chess::Square clicked = BoardCoords::screenToSquare(boardLocalPos, pixelScale);
+    const chess::Square clicked = BoardCoords::screenToSquare(boardLocalPos, layout);
 
     if (!clicked.is_valid()) {
         clearSelection();
@@ -241,12 +240,6 @@ void InputHandler::handleKeyPress(sf::Keyboard::Key key) {
             sf::Style::Default,
             sf::State::Windowed,
             settings
-        );
-
-        WindowAspectRatio::lock(
-            window_,
-            config_.windowWidth,
-            config_.windowHeight
         );
     }
 

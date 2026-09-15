@@ -12,3 +12,5 @@
 /build/
 /src/render/.idea
 .DS_Store
+/.vs
+/out

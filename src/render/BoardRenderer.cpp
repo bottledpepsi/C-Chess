@@ -26,25 +26,33 @@ BoardRenderer::BoardRenderer(
     : board(board),
       assets(assetManager),
       notation(assets.getFont("arial")),
-      DestinationDot((BoardConstants::SQUARE_SIZE * 0.16f) * pixelScale),
-      captureRing((BoardConstants::SQUARE_SIZE / 2.f - 4.f) * pixelScale) {
-    square.setSize({BoardConstants::SQUARE_SIZE, BoardConstants::SQUARE_SIZE});
-
+      DestinationDot(1.f),
+      captureRing(1.f) {
     DestinationDot.setFillColor(sf::Color(0, 0, 0, 90));
-    DestinationDot.setOrigin({DestinationDot.getRadius(), DestinationDot.getRadius()});
-
     captureRing.setFillColor(sf::Color::Transparent);
     captureRing.setOutlineColor(sf::Color(0, 0, 0, 90));
-    captureRing.setOutlineThickness(-4.f);
-    captureRing.setOrigin({captureRing.getRadius(), captureRing.getRadius()});
 }
 
 void BoardRenderer::drawBoard(
     sf::RenderWindow &window,
+    const BoardLayout &layout,
     std::optional<chess::Square> selectedSquare,
     const std::vector<chess::Square> &legalDestinations,
     const std::vector<chess::Square> &legalCaptures
 ) {
+    const float squareSize = layout.squareSize;
+
+    square.setSize({squareSize, squareSize});
+
+    const float dotRadius = (squareSize * 0.16f) * pixelScale;
+    DestinationDot.setRadius(dotRadius);
+    DestinationDot.setOrigin({dotRadius, dotRadius});
+
+    const float ringRadius = (squareSize / 2.f - 4.f) * pixelScale;
+    captureRing.setRadius(ringRadius);
+    captureRing.setOutlineThickness(-4.f);
+    captureRing.setOrigin({ringRadius, ringRadius});
+
     const unsigned int scaledCharacterSize =
             AssetManager::sharpCharacterSize(16, pixelScale);
 
@@ -65,7 +73,7 @@ void BoardRenderer::drawBoard(
                                       : BoardConstants::BOARD_SIZE - 1 - screenRank;
 
             const chess::Square sq{chess::File(boardFile), chess::Rank(boardRank)};
-            const sf::Vector2f pos = BoardCoords::squareToScreen(sq, pixelScale);
+            const sf::Vector2f pos = BoardCoords::squareToScreen(sq, layout);
             const float x = pos.x;
             const float y = pos.y;
 
@@ -92,8 +100,8 @@ void BoardRenderer::drawBoard(
             window.draw(square);
 
             const sf::Vector2f center{
-                x + BoardConstants::SQUARE_SIZE / 2.f,
-                y + BoardConstants::SQUARE_SIZE / 2.f
+                x + squareSize / 2.f,
+                y + squareSize / 2.f
             };
 
             if (std::find(legalCaptures.begin(), legalCaptures.end(), sq) != legalCaptures.end()) {
@@ -111,8 +119,8 @@ void BoardRenderer::drawBoard(
                 );
 
                 notation.setPosition({
-                    x + BoardConstants::SQUARE_SIZE / 1.25f,
-                    y + BoardConstants::SQUARE_SIZE - 22.f
+                    x + squareSize / 1.25f,
+                    y + squareSize - 22.f
                 });
 
                 notation.setFillColor(

@@ -2,10 +2,10 @@
 
 #include <SFML/Graphics.hpp>
 #include "../app/AssetManager.hpp"
+#include "BoardLayout.hpp"
 
 class TrayRenderer {
 public:
-    static constexpr float TRAY_WIDTH = 680.f;
     static constexpr float TRAY_HEIGHT = 64.f;
     static constexpr sf::Color TRAY_COLOUR{52, 52, 52};
     float pixelScale = 1.0f;
@@ -15,7 +15,8 @@ public:
     );
 
     void drawTrays(
-        sf::RenderWindow &window
+        sf::RenderWindow &window,
+        const BoardLayout &layout
     );
 
 private:

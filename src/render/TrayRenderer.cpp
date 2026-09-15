@@ -6,11 +6,13 @@ TrayRenderer::TrayRenderer(
 )
     : assets(assetManager),
       label(assets.getFont("arial")) {
-    tray.setSize({TrayRenderer::TRAY_WIDTH, TrayRenderer::TRAY_HEIGHT});
-    tray.setFillColor(TrayRenderer::TRAY_COLOUR);}
+    tray.setSize({0.f, TrayRenderer::TRAY_HEIGHT});
+    tray.setFillColor(TrayRenderer::TRAY_COLOUR);
+}
 
 void TrayRenderer::drawTrays(
-    sf::RenderWindow &window
+    sf::RenderWindow &window,
+    const BoardLayout &layout
 ) {
     const unsigned int scaledCharacterSize =
             AssetManager::sharpCharacterSize(16, pixelScale);
@@ -21,10 +23,14 @@ void TrayRenderer::drawTrays(
         const float textScale = 1.f / pixelScale;
         label.setScale({textScale, textScale});
 
-        tray.setPosition({0.f, 0.f});
+        // Trays stay fixed-height and pinned to the top/bottom edges,
+        // stretching only horizontally to match the current window width.
+        tray.setSize({layout.trayWidth, layout.trayHeight});
+
+        tray.setPosition(layout.topTrayPosition);
         window.draw(tray);
 
-        tray.setPosition({0.f, 704.f});
+        tray.setPosition(layout.bottomTrayPosition);
         window.draw(tray);
     }
 }

@@ -8,6 +8,7 @@
 
 #include "../chess/chess.hpp"
 #include "../app/Config.hpp"
+#include "../render/BoardLayout.hpp"
 
 class InputHandler {
 public:
@@ -19,7 +20,7 @@ public:
         Config config
         );
 
-    void handleEvent(const sf::Event &event, float pixelScale);
+    void handleEvent(const sf::Event &event, const BoardLayout &layout);
 
     std::optional<chess::Square> selectedSquare() const;
 
@@ -67,7 +68,7 @@ private:
 
     void refreshGameOverState();
 
-    void handleMouseClick(sf::Vector2i pixelPos, float pixelScale);
+    void handleMouseClick(sf::Vector2i pixelPos, const BoardLayout &layout);
 
     void handleKeyPress(sf::Keyboard::Key key);
 

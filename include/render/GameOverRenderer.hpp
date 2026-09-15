@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "../app/AssetManager.hpp"
 #include "../input/InputHandler.hpp"
+#include "BoardLayout.hpp"
 
 
 class GameOverRenderer {
@@ -11,7 +12,7 @@ public:
         const InputHandler &inputHandler
     );
 
-    void drawGameOver(sf::RenderWindow &window);
+    void drawGameOver(sf::RenderWindow &window, const BoardLayout &layout);
 
 private:
     AssetManager &assets;

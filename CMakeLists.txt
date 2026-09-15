@@ -22,6 +22,8 @@ add_executable(C_Chess MACOSX_BUNDLE
         src/app/App.cpp
         src/render/BoardRenderer.cpp
         include/render/BoardRenderer.hpp
+        src/render/BoardLayout.cpp
+        include/render/BoardLayout.hpp
         src/app/AssetManager.cpp
         include/app/AssetManager.hpp
         src/app/Config.cpp
@@ -30,7 +32,6 @@ add_executable(C_Chess MACOSX_BUNDLE
         include/input/InputHandler.hpp
         src/input/BoardCoords.cpp
         include/input/BoardCoords.hpp
-        include/app/WindowAspectRatio.hpp
         src/render/PieceRenderer.cpp
         include/render/PieceRenderer.hpp
         include/render/BoardConstants.hpp
@@ -44,25 +45,11 @@ add_executable(C_Chess MACOSX_BUNDLE
 
 if(WIN32)
 
-    target_sources(C_Chess PRIVATE
-            src/app/WindowAspectRatioWindows.cpp
-    )
-
     target_compile_definitions(C_Chess PRIVATE SFML_STATIC)
 
 elseif(APPLE)
 
     enable_language(OBJCXX)
-
-    target_sources(C_Chess PRIVATE
-            src/app/WindowAspectRatioMacOS.mm
-    )
-
-elseif(UNIX)
-
-    target_sources(C_Chess PRIVATE
-            src/app/WindowAspectRatioLinux.cpp
-    )
 
 endif()
 

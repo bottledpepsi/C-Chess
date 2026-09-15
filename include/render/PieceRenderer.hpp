@@ -4,6 +4,7 @@
 
 #include "../app/AssetManager.hpp"
 #include "../chess/chess.hpp"
+#include "BoardLayout.hpp"
 
 class PieceRenderer {
 public:
@@ -12,7 +13,7 @@ public:
         AssetManager &assetManager
     );
 
-    void drawPieces(sf::RenderWindow &window);
+    void drawPieces(sf::RenderWindow &window, const BoardLayout &layout);
 
 private:
     const chess::Board &board;

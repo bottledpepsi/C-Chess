@@ -55,20 +55,20 @@ std::string GameOverRenderer::buildSubtitle() const {
     }
 }
 
-void GameOverRenderer::drawGameOver(sf::RenderWindow &window) {
+void GameOverRenderer::drawGameOver(sf::RenderWindow &window, const BoardLayout &layout) {
     if (!input.isGameOver()) {
         return;
     }
 
-    const float boardSize = BoardConstants::SQUARE_SIZE * BoardConstants::BOARD_SIZE;
+    const float boardSize = layout.boardSize;
 
     overlay.setSize({boardSize, boardSize});
-    overlay.setPosition(BoardCoords::BOARD_ORIGIN);
+    overlay.setPosition(layout.boardOrigin);
     overlay.setFillColor(sf::Color(0, 0, 0, 150));
     window.draw(overlay);
 
-    const float boardCenterX = BoardCoords::BOARD_ORIGIN.x + boardSize / 2.f;
-    const float boardCenterY = BoardCoords::BOARD_ORIGIN.y + boardSize / 2.f;
+    const float boardCenterX = layout.boardOrigin.x + boardSize / 2.f;
+    const float boardCenterY = layout.boardOrigin.y + boardSize / 2.f;
 
     title.setString(buildTitle());
     subtitle.setString(buildSubtitle());

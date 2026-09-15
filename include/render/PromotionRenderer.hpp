@@ -4,6 +4,7 @@
 #include "../app/AssetManager.hpp"
 #include "../chess/chess.hpp"
 #include "../input/InputHandler.hpp"
+#include "BoardLayout.hpp"
 
 
 class PromotionRenderer {
@@ -13,7 +14,7 @@ public:
         InputHandler &inputHandler
     );
 
-    void drawPromotion(sf::RenderWindow &window);
+    void drawPromotion(sf::RenderWindow &window, const BoardLayout &layout);
 
     void handleClick(sf::Vector2f boardLocalPos);
 

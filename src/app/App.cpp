@@ -6,7 +6,8 @@
 #include <filesystem>
 #include "../../include/app/AssetManager.hpp"
 #include "../../include/app/Config.hpp"
-#include "../../include/app/WindowAspectRatio.hpp"
+#include "../../include/render/BoardConstants.hpp"
+#include "../../include/render/BoardLayout.hpp"
 #include "../../include/render/BoardRenderer.hpp"
 #include "../../include/render/PieceRenderer.hpp"
 #include "../../include/input/InputHandler.hpp"
@@ -36,51 +37,28 @@ void setWorkingDirectoryToExecutablePath() {
 #endif
 }
 
-float updateView(sf::RenderWindow &window, sf::View &view, float gameWidth, float gameHeight) {
-    const float gameAspect = gameWidth / gameHeight;
-
+// Resizes the view to always match the window 1:1 in pixels (no
+// letterboxing), so the window can be stretched freely. Layout of the
+// board and UI within that space is handled separately by BoardLayout.
+void updateView(sf::RenderWindow &window, sf::View &view) {
     const sf::Vector2u windowSize = window.getSize();
 
-    const float windowAspect =
-            static_cast<float>(windowSize.x) /
-            static_cast<float>(windowSize.y);
-
-    float viewportHeightFraction = 1.f;
-
-    if (windowAspect > gameAspect) {
-        const float viewportWidth =
-                gameAspect / windowAspect;
-
-        view.setViewport(sf::FloatRect(
-            {(1.f - viewportWidth) / 2.f, 0.f},
-            {viewportWidth, 1.f}
-        ));
-    } else {
-        const float viewportHeight =
-                windowAspect / gameAspect;
-
-        viewportHeightFraction = viewportHeight;
-
-        view.setViewport(sf::FloatRect(
-            {0.f, (1.f - viewportHeight) / 2.f},
-            {1.f, viewportHeight}
-        ));
-    }
+    view.setSize({
+        static_cast<float>(windowSize.x),
+        static_cast<float>(windowSize.y)
+    });
+    view.setCenter({
+        static_cast<float>(windowSize.x) / 2.f,
+        static_cast<float>(windowSize.y) / 2.f
+    });
 
     window.setView(view);
-    const float viewportHeightPixels =
-            viewportHeightFraction * static_cast<float>(windowSize.y);
-
-    return viewportHeightPixels / gameHeight;
 }
 
 int main() {
     setWorkingDirectoryToExecutablePath();
 
     const Config config = Config::load();
-
-    const auto windowWidth = static_cast<float>(config.windowWidth);
-    const auto windowHeight = static_cast<float>(config.windowHeight);
 
     AssetManager assets;
 
@@ -137,16 +115,22 @@ int main() {
     sf::View gameView(
         sf::FloatRect(
             {0.f, 0.f},
-            {windowWidth, windowHeight}
+            {static_cast<float>(config.windowWidth), static_cast<float>(config.windowHeight)}
         )
     );
 
-    float pixelScale = updateView(window, gameView, windowWidth, windowHeight);
+    updateView(window, gameView);
 
-    WindowAspectRatio::lock(
-        window,
-        config.windowWidth,
-        config.windowHeight
+    // Margins (in pixels) kept around the board within the space between
+    // the two trays; the board itself scales to fill whatever is left.
+    constexpr float BOARD_SIDE_MARGIN = 40.f;
+    constexpr float BOARD_VERTICAL_MARGIN = 20.f;
+
+    BoardLayout layout = BoardLayout::compute(
+        window.getSize(),
+        TrayRenderer::TRAY_HEIGHT,
+        BOARD_SIDE_MARGIN,
+        BOARD_VERTICAL_MARGIN
     );
 
     if (config.startFullscreen) {
@@ -178,7 +162,11 @@ int main() {
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
-            inputHandler.handleEvent(*event, pixelScale);
+            if (event->is<sf::Event::Resized>()) {
+                updateView(window, gameView);
+            }
+
+            inputHandler.handleEvent(*event, layout);
 
             if (const auto *mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mouseButtonPressed->button == sf::Mouse::Button::Left) {
@@ -189,24 +177,34 @@ int main() {
             }
         }
 
-        pixelScale = updateView(window, gameView, windowWidth, windowHeight);
+        layout = BoardLayout::compute(
+            window.getSize(),
+            TrayRenderer::TRAY_HEIGHT,
+            BOARD_SIDE_MARGIN,
+            BOARD_VERTICAL_MARGIN
+        );
+
+        const float pixelScale = layout.squareSize / BoardConstants::REFERENCE_SQUARE_SIZE;
+        boardRenderer.pixelScale = pixelScale;
+        trayRenderer.pixelScale = pixelScale;
 
         window.clear();
 
         boardRenderer.drawBoard(
             window,
+            layout,
             inputHandler.selectedSquare(),
             inputHandler.legalDestinations(),
             inputHandler.legalCaptures()
         );
 
-        trayRenderer.drawTrays(window);
+        trayRenderer.drawTrays(window, layout);
 
-        pieceRenderer.drawPieces(window);
+        pieceRenderer.drawPieces(window, layout);
 
-        promotionRenderer.drawPromotion(window);
+        promotionRenderer.drawPromotion(window, layout);
 
-        gameOverRenderer.drawGameOver(window);
+        gameOverRenderer.drawGameOver(window, layout);
 
         window.display();
     }

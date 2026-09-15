@@ -40,7 +40,9 @@ PieceRenderer::PieceRenderer(
       assets(assetManager) {
 }
 
-void PieceRenderer::drawPieces(sf::RenderWindow &window) {
+void PieceRenderer::drawPieces(sf::RenderWindow &window, const BoardLayout &layout) {
+    const float squareSize = layout.squareSize;
+
     for (int screenRank = 0; screenRank < BoardConstants::BOARD_SIZE; ++screenRank) {
         for (int screenFile = 0; screenFile < BoardConstants::BOARD_SIZE; ++screenFile) {
             const int boardFile = BoardConstants::FLIPPED
@@ -73,9 +75,9 @@ void PieceRenderer::drawPieces(sf::RenderWindow &window) {
 
             if (textureSize.x > 0 && textureSize.y > 0) {
                 sprite.setScale({
-                    (BoardConstants::SQUARE_SIZE * SIZE_MODIFIER) /
+                    (squareSize * SIZE_MODIFIER) /
                     static_cast<float>(textureSize.x),
-                    (BoardConstants::SQUARE_SIZE * SIZE_MODIFIER) /
+                    (squareSize * SIZE_MODIFIER) /
                     static_cast<float>(textureSize.y)
                 });
 
@@ -85,11 +87,11 @@ void PieceRenderer::drawPieces(sf::RenderWindow &window) {
                 });
             }
 
-            const sf::Vector2f topLeft = BoardCoords::squareToScreen(square, 1.0f);
+            const sf::Vector2f topLeft = BoardCoords::squareToScreen(square, layout);
 
             sprite.setPosition({
-                topLeft.x + BoardConstants::SQUARE_SIZE / 2.0f,
-                topLeft.y + BoardConstants::SQUARE_SIZE / 2.0f
+                topLeft.x + squareSize / 2.0f,
+                topLeft.y + squareSize / 2.0f
             });
 
             window.draw(sprite);

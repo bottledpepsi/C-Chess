@@ -1,18 +1,16 @@
 #include "../../include/input/BoardCoords.hpp"
 #include "../../include/render/BoardConstants.hpp"
 
-const sf::Vector2f BoardCoords::BOARD_ORIGIN(60.f, 84.f);
+chess::Square BoardCoords::screenToSquare(sf::Vector2f boardLocalPos, const BoardLayout &layout) {
+    const float relativeX = boardLocalPos.x - layout.boardOrigin.x;
+    const float relativeY = boardLocalPos.y - layout.boardOrigin.y;
 
-chess::Square BoardCoords::screenToSquare(sf::Vector2f boardLocalPos, float) {
-    const float relativeX = boardLocalPos.x - BOARD_ORIGIN.x;
-    const float relativeY = boardLocalPos.y - BOARD_ORIGIN.y;
-
-    if (relativeX < 0.f || relativeY < 0.f) {
+    if (relativeX < 0.f || relativeY < 0.f || layout.squareSize <= 0.f) {
         return chess::Square::NO_SQ;
     }
 
-    const int screenFile = static_cast<int>(relativeX / BoardConstants::SQUARE_SIZE);
-    const int screenRank = static_cast<int>(relativeY / BoardConstants::SQUARE_SIZE);
+    const int screenFile = static_cast<int>(relativeX / layout.squareSize);
+    const int screenRank = static_cast<int>(relativeY / layout.squareSize);
 
     if (screenFile < 0 || screenFile >= BoardConstants::BOARD_SIZE ||
         screenRank < 0 || screenRank >= BoardConstants::BOARD_SIZE) {
@@ -29,9 +27,9 @@ chess::Square BoardCoords::screenToSquare(sf::Vector2f boardLocalPos, float) {
     return chess::Square(chess::File(boardFile), chess::Rank(boardRank));
 }
 
-sf::Vector2f BoardCoords::squareToScreen(chess::Square sq, float) {
+sf::Vector2f BoardCoords::squareToScreen(chess::Square sq, const BoardLayout &layout) {
     if (!sq.is_valid()) {
-        return BOARD_ORIGIN;
+        return layout.boardOrigin;
     }
 
     const int boardFile = sq.file();
@@ -44,8 +42,8 @@ sf::Vector2f BoardCoords::squareToScreen(chess::Square sq, float) {
                                ? boardRank
                                : BoardConstants::BOARD_SIZE - 1 - boardRank;
 
-    const float x = BOARD_ORIGIN.x + static_cast<float>(screenFile) * BoardConstants::SQUARE_SIZE;
-    const float y = BOARD_ORIGIN.y + static_cast<float>(screenRank) * BoardConstants::SQUARE_SIZE;
+    const float x = layout.boardOrigin.x + static_cast<float>(screenFile) * layout.squareSize;
+    const float y = layout.boardOrigin.y + static_cast<float>(screenRank) * layout.squareSize;
 
     return sf::Vector2f(x, y);
 }

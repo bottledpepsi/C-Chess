@@ -31,7 +31,7 @@ PromotionRenderer::PromotionRenderer(AssetManager &assetManager, InputHandler &i
     title.setFillColor(sf::Color(230, 230, 230));
 }
 
-void PromotionRenderer::drawPromotion(sf::RenderWindow &window) {
+void PromotionRenderer::drawPromotion(sf::RenderWindow &window, const BoardLayout &layout) {
     if (!input.awaitingPromotionChoice()) {
         return;
     }
@@ -46,10 +46,8 @@ void PromotionRenderer::drawPromotion(sf::RenderWindow &window) {
     constexpr float OPTION_SIZE =
             (PANEL_WIDTH - 2.f * PANEL_PADDING - (OPTION_COUNT - 1.f) * OPTION_SPACING) / OPTION_COUNT;
 
-    const float boardCenterX =
-            BoardCoords::BOARD_ORIGIN.x + BoardConstants::SQUARE_SIZE * BoardConstants::BOARD_SIZE / 2.f;
-    const float boardCenterY =
-            BoardCoords::BOARD_ORIGIN.y + BoardConstants::SQUARE_SIZE * BoardConstants::BOARD_SIZE / 2.f;
+    const float boardCenterX = layout.boardOrigin.x + layout.boardSize / 2.f;
+    const float boardCenterY = layout.boardOrigin.y + layout.boardSize / 2.f;
 
     const sf::Vector2f panelPosition(
         boardCenterX - PANEL_WIDTH / 2.f,
@@ -57,11 +55,8 @@ void PromotionRenderer::drawPromotion(sf::RenderWindow &window) {
     );
 
     // Dim the board behind the panel so the picker reads as a modal choice.
-    sf::RectangleShape overlay({
-        BoardConstants::SQUARE_SIZE * BoardConstants::BOARD_SIZE,
-        BoardConstants::SQUARE_SIZE * BoardConstants::BOARD_SIZE
-    });
-    overlay.setPosition(BoardCoords::BOARD_ORIGIN);
+    sf::RectangleShape overlay({layout.boardSize, layout.boardSize});
+    overlay.setPosition(layout.boardOrigin);
     overlay.setFillColor(sf::Color(0, 0, 0, 120));
     window.draw(overlay);
 

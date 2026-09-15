@@ -5,6 +5,7 @@
 #include <vector>
 #include "../app/AssetManager.hpp"
 #include "../chess/chess.hpp"
+#include "BoardLayout.hpp"
 
 
 class BoardRenderer {
@@ -18,6 +19,7 @@ public:
 
     void drawBoard(
         sf::RenderWindow &window,
+        const BoardLayout &layout,
         std::optional<chess::Square> selectedSquare = std::nullopt,
         const std::vector<chess::Square> &legalDestinations = {},
         const std::vector<chess::Square> &legalCaptures = {}
