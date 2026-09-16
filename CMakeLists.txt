@@ -41,6 +41,8 @@ add_executable(C_Chess MACOSX_BUNDLE
         include/render/GameOverRenderer.hpp
         src/render/TrayRenderer.cpp
         include/render/TrayRenderer.hpp
+        src/render/MoveHistoryPanel.cpp
+        include/render/MoveHistoryPanel.hpp
 )
 
 if(WIN32)

@@ -1,6 +1,8 @@
 #include "../../include/input/InputHandler.hpp"
 #include "../../include/input/BoardCoords.hpp"
 
+#include <cctype>
+
 InputHandler::InputHandler(chess::Board &board,
     sf::RenderWindow &window,
     sf::View &gameView,
@@ -28,6 +30,33 @@ void InputHandler::playMoveSound(const chess::Move &move) {
     } else {
         moveSound_.play();
     }
+}
+
+void InputHandler::recordMove(const chess::Move &move) {
+    // Plain from-to algebraic form (e.g. "e2e4"). Captured squares are
+    // read from the board before the move is applied, so call this
+    // before board_.makeMove().
+    const bool isCapture =
+        board_.at(move.to()) != chess::Piece::NONE ||
+        move.typeOf() == chess::Move::ENPASSANT;
+
+    std::string text = static_cast<std::string>(move.from()) + static_cast<std::string>(move.to());
+
+    if (isCapture) {
+        text += "x";
+    }
+
+    if (move.typeOf() == chess::Move::PROMOTION) {
+        const char promotionLetter = static_cast<std::string>(move.promotionType())[0];
+        text += '=';
+        text += static_cast<char>(std::toupper(static_cast<unsigned char>(promotionLetter)));
+    }
+
+    movesPlayed_.push_back(text);
+}
+
+const std::vector<std::string> &InputHandler::movesPlayed() const {
+    return movesPlayed_;
 }
 
 void InputHandler::handleEvent(const sf::Event &event, const BoardLayout &layout) {
@@ -112,6 +141,7 @@ void InputHandler::choosePromotion(chess::PieceType type) {
             move.typeOf() == chess::Move::PROMOTION &&
             move.promotionType() == type) {
             playMoveSound(move);
+            recordMove(move);
             board_.makeMove(move);
             refreshGameOverState();
             clearSelection();
@@ -204,6 +234,7 @@ void InputHandler::attemptMove(chess::Square from, chess::Square to) {
 
     if (matches.size() == 1) {
         playMoveSound(*matches.front());
+        recordMove(*matches.front());
         board_.makeMove(*matches.front());
         refreshGameOverState();
         clearSelection();

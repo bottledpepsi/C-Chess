@@ -7,7 +7,8 @@ BoardLayout BoardLayout::compute(
     const sf::Vector2u windowSize,
     const float trayHeight,
     const float sideMargin,
-    const float verticalMargin
+    const float verticalMargin,
+    const float panelWidth
 ) {
     BoardLayout layout;
 
@@ -15,14 +16,16 @@ BoardLayout BoardLayout::compute(
     const auto windowHeightF = static_cast<float>(windowSize.y);
 
     layout.trayHeight = trayHeight;
-    layout.trayWidth = windowWidth;
+
+    const float boardAreaWidth = std::max(windowWidth - panelWidth, 1.f);
+    layout.trayWidth = boardAreaWidth;
 
     layout.topTrayPosition = {0.f, 0.f};
     layout.bottomTrayPosition = {0.f, std::max(windowHeightF - trayHeight, trayHeight)};
 
     // Space left for the board between the two trays.
     const float availableWidth =
-            std::max(windowWidth - 2.f * sideMargin, 1.f);
+            std::max(boardAreaWidth - 2.f * sideMargin, 1.f);
 
     const float availableHeight =
             std::max(
@@ -36,9 +39,18 @@ BoardLayout BoardLayout::compute(
     layout.squareSize = boardSize / static_cast<float>(BoardConstants::BOARD_SIZE);
 
     layout.boardOrigin = {
-        (windowWidth - boardSize) / 2.f,
+        (boardAreaWidth - boardSize) / 2.f,
         trayHeight + (windowHeightF - 2.f * trayHeight - boardSize) / 2.f
     };
+
+    constexpr float PANEL_GAP = 20.f;
+    const float pixelScale = layout.squareSize / BoardConstants::REFERENCE_SQUARE_SIZE;
+    const float boardRightEdge = layout.boardOrigin.x + boardSize;
+    const float panelX = boardRightEdge + PANEL_GAP * pixelScale;
+
+    layout.panelWidth = std::max(windowWidth - panelX, 0.f);
+    layout.panelHeight = windowHeightF;
+    layout.panelPosition = {panelX, 0.f};
 
     return layout;
 }

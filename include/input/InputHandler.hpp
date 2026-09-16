@@ -4,6 +4,7 @@
 #include <SFML/Audio.hpp>
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "../chess/chess.hpp"
@@ -44,6 +45,8 @@ public:
 
     chess::GameResultReason gameResultReason() const;
 
+    const std::vector<std::string> &movesPlayed() const;
+
 private:
     chess::Board &board_;
     sf::RenderWindow &window_;
@@ -66,7 +69,11 @@ private:
     std::pair<chess::GameResultReason, chess::GameResult> gameOverState_ =
             {chess::GameResultReason::NONE, chess::GameResult::NONE};
 
+    std::vector<std::string> movesPlayed_;
+
     void refreshGameOverState();
+
+    void recordMove(const chess::Move &move);
 
     void handleMouseClick(sf::Vector2i pixelPos, const BoardLayout &layout);
 

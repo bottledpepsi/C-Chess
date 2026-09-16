@@ -13,10 +13,15 @@ struct BoardLayout {
     sf::Vector2f topTrayPosition{0.f, 0.f};
     sf::Vector2f bottomTrayPosition{0.f, 0.f};
 
+    sf::Vector2f panelPosition{0.f, 0.f};
+    float panelWidth = 0.f;
+    float panelHeight = 0.f;
+
     static BoardLayout compute(
         sf::Vector2u windowSize,
         float trayHeight,
         float sideMargin,
-        float verticalMargin
+        float verticalMargin,
+        float panelWidth
     );
 };

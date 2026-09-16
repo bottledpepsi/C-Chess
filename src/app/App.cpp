@@ -14,6 +14,7 @@
 #include "../../include/render/PromotionRenderer.hpp"
 #include "../../include/render/GameOverRenderer.hpp"
 #include "../../include/render/TrayRenderer.hpp"
+#include "../../include/render/MoveHistoryPanel.hpp"
 
 
 #if defined(__APPLE__)
@@ -130,7 +131,8 @@ int main() {
         window.getSize(),
         TrayRenderer::TRAY_HEIGHT,
         BOARD_SIDE_MARGIN,
-        BOARD_VERTICAL_MARGIN
+        BOARD_VERTICAL_MARGIN,
+        MoveHistoryPanel::PANEL_WIDTH
     );
 
     if (config.startFullscreen) {
@@ -146,6 +148,7 @@ int main() {
     chess::Board board;
     BoardRenderer boardRenderer(board, assets);
     TrayRenderer trayRenderer(assets);
+    MoveHistoryPanel moveHistoryPanel(assets);
     PieceRenderer pieceRenderer(board, assets);
     InputHandler inputHandler(
         board,
@@ -159,6 +162,8 @@ int main() {
     GameOverRenderer gameOverRenderer(assets, inputHandler);
 
     window.setVerticalSyncEnabled(true);
+
+    std::size_t lastRecordedMoveCount = 0;
 
     while (window.isOpen()) {
         while (const std::optional event = window.pollEvent()) {
@@ -181,12 +186,14 @@ int main() {
             window.getSize(),
             TrayRenderer::TRAY_HEIGHT,
             BOARD_SIDE_MARGIN,
-            BOARD_VERTICAL_MARGIN
+            BOARD_VERTICAL_MARGIN,
+            MoveHistoryPanel::PANEL_WIDTH
         );
 
         const float pixelScale = layout.squareSize / BoardConstants::REFERENCE_SQUARE_SIZE;
         boardRenderer.pixelScale = pixelScale;
         trayRenderer.pixelScale = pixelScale;
+        moveHistoryPanel.pixelScale = pixelScale;
 
         window.clear();
 
@@ -199,6 +206,17 @@ int main() {
         );
 
         trayRenderer.drawTrays(window, layout);
+
+        if (const auto &movesPlayed = inputHandler.movesPlayed();
+            movesPlayed.size() != lastRecordedMoveCount) {
+            moveHistoryPanel.clear();
+            for (const std::string &moveText: movesPlayed) {
+                moveHistoryPanel.addMove(moveText);
+            }
+            lastRecordedMoveCount = movesPlayed.size();
+        }
+
+        moveHistoryPanel.drawPanel(window, layout);
 
         pieceRenderer.drawPieces(window, layout);
 
