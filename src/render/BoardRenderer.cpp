@@ -58,10 +58,7 @@ void BoardRenderer::drawBoard(
 
     notation.setCharacterSize(scaledCharacterSize);
 
-    if (pixelScale > 0.f) {
-        const float textScale = 1.f / pixelScale;
-        notation.setScale({textScale, textScale});
-    }
+    notation.setScale({1.f, 1.f});
 
     for (int screenRank = 0; screenRank < BoardConstants::BOARD_SIZE; ++screenRank) {
         for (int screenFile = 0; screenFile < BoardConstants::BOARD_SIZE; ++screenFile) {
@@ -120,7 +117,7 @@ void BoardRenderer::drawBoard(
 
                 notation.setPosition({
                     x + squareSize / 1.25f,
-                    y + squareSize - 22.f
+                    y + squareSize - 22.f * pixelScale
                 });
 
                 notation.setFillColor(
@@ -138,8 +135,8 @@ void BoardRenderer::drawBoard(
                 );
 
                 notation.setPosition({
-                    x + 5.f,
-                    y + 3.f
+                    x + 5.f * pixelScale,
+                    y + 3.f * pixelScale
                 });
 
                 notation.setFillColor(
